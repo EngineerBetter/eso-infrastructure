@@ -1,9 +1,31 @@
+resource_types:
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+    tag: latest
+
 resources:
 - name: kubernetes-repo
   type: git
+  check_every: 15m
   source:
     uri: https://github.com/EngineerBetter/kubernetes-cluster-eso.git
     branch: master
+- name: terraform
+  type: terraform
+  source:
+    backend_type: gcs
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state
+      region: eu-west2
+    vars:
+      region: eu-west2
+      zone: eu-west2-a
+      project: kubernetes-cluster-eso
+    env:
+      GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
 jobs:
 - name: set-pipeline
   serial: true
@@ -12,17 +34,11 @@ jobs:
     trigger: true
   - set_pipeline: self
     file: kubernetes-repo/ci/pipeline.yaml
-- name: hello-world
+- name: run-terraform
   plan:
   - get: kubernetes-repo
     trigger: true
     passed: [set-pipeline]
-  - task: simple-task
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source: { repository: busybox}
-      run:
-        path: echo
-        args: ["Hello world! My credential example_cred: ((example_cred))"]
+  - put: terraform
+    params:
+      terraform_source: kubernetes-repo/terraform
