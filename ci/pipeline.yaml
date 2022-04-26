@@ -1,5 +1,17 @@
+resources:
+- name: kubernetes-repo
+  type: git
+  source:
+    uri: git@github.com:EngineerBetter/kubernetes-cluster-eso.git
+    branch: master
 jobs:
-
+- name: set-pipeline
+  serial: true
+  plan:
+  - get: kubernetes-repo
+    trigger: true
+  - set_pipeline: self
+    file: kubernetes-repo/ci/pipeline.yaml
 - name: hello-world
   plan:
   - task: simple-task
@@ -11,4 +23,3 @@ jobs:
       run:
         path: echo
         args: ["Hello world! My credential example_cred: ((example_cred))"]
-
