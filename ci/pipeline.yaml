@@ -14,6 +14,9 @@ jobs:
     file: kubernetes-repo/ci/pipeline.yaml
 - name: hello-world
   plan:
+  - get: kubernetes-repo
+    trigger: true
+    passed: [set-pipeline]
   - task: simple-task
     config:
       platform: linux
