@@ -2,7 +2,7 @@ resources:
 - name: kubernetes-repo
   type: git
   source:
-    uri: git@github.com:EngineerBetter/kubernetes-cluster-eso.git
+    uri: https://github.com/EngineerBetter/kubernetes-cluster-eso.git
     branch: master
 jobs:
 - name: set-pipeline
