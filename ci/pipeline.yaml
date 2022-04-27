@@ -24,6 +24,7 @@ resources:
       region: eu-west2
       zone: eu-west2-a
       project: kubernetes-cluster-eso
+    env_name: development
     env:
       GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
 jobs:
