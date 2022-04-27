@@ -24,6 +24,7 @@ resources:
       region: europe-west2
       zone: europe-west2-a
       project: kubernetes-cluster-eso
+      service_account: concourse@kubernetes-cluster-eso.iam.gserviceaccount.com
     env_name: development
     env:
       GOOGLE_CREDENTIALS: ((gcp_concourse_iam))

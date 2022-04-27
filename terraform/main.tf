@@ -6,6 +6,14 @@ resource "google_service_account" "default" {
   ]
 }
 
+#We need to add service account permissions to ourselves
+#terraform resource: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
+#available GKE roles can be found here: https://cloud.google.com/iam/docs/understanding-roles
+resource "google_project_iam_member" "cluster-permissions" {
+  role    = "roles/container.clusterAdmin"
+  member  = var.service_account
+  project = var.project
+}
 resource "google_container_cluster" "primary" {
   name     = "my-gke-cluster-${var.project}"
   location = var.region
