@@ -19,7 +19,6 @@ resources:
     backend_config:
       bucket: terraform-state-eso
       prefix: terraform/state
-      region: eu-west2
     vars:
       region: eu-west2
       zone: eu-west2-a
