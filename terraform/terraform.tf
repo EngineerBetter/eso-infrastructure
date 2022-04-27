@@ -11,10 +11,4 @@ terraform {
     bucket  = "terraform-state-eso"
     prefix  = "terraform/state"
    }    
-
-
-
-
-
 }
-
