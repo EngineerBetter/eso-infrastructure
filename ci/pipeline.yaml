@@ -12,6 +12,7 @@ resources:
   source:
     uri: https://github.com/EngineerBetter/kubernetes-cluster-eso.git
     branch: master
+    
 - name: terraform
   type: terraform
   source:
@@ -20,8 +21,8 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state
     vars:
-      region: eu-west2
-      zone: eu-west2-a
+      region: europe-west2
+      zone: europe-west2-a
       project: kubernetes-cluster-eso
     env_name: development
     env:
