@@ -56,23 +56,23 @@ resources:
     location: Europe/London
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
-# - name: seven-pm-weekdays
-#   type: time
-#   icon: clock-outline
-#   source:
-#     start: 7:00 PM
-#     stop: 7:55 AM
-#     location: Europe/London
-#     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+- name: seven-pm-weekdays
+  type: time
+  icon: clock-outline
+  source:
+    start: 7:00 PM
+    stop: 7:55 AM
+    location: Europe/London
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
 jobs:
-# - name: set-pipeline
-#   serial: true
-#   plan:
-#   - get: eso-infra-repo
-#     trigger: true
-#   - set_pipeline: self
-#     file: eso-infra-repo/ci/pipeline.yaml
+- name: set-pipeline
+  serial: true
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+  - set_pipeline: self
+    file: eso-infra-repo/ci/pipeline.yaml
 
 - name: spin-gke-cluster
   plan:
@@ -87,6 +87,9 @@ jobs:
 
 - name: install-eso
   plan:
+  - get: eight-am-weekdays
+    trigger: true
+    passed: [spin-gke-cluster]
   - get: eso-infra-repo
     trigger: true
     passed: [spin-gke-cluster]
@@ -96,13 +99,19 @@ jobs:
 
 - name: destroy-gke-cluster
   plan:
-  # - get: seven-pm-weekdays
-  #   trigger: true
+  - get: seven-pm-weekdays
+    trigger: true
   - get: eso-infra-repo
     passed: [spin-gke-cluster]
   - put: terraform-eso  
     params:
       terraform_source: eso-infra-repo/terraform/eso
+      action: destroy
+    get_params:
+      action: destroy   
+  - put: terraform-gke  
+    params:
+      terraform_source: eso-infra-repo/terraform/gke
       action: destroy
     get_params:
       action: destroy
