@@ -96,7 +96,7 @@ jobs:
   plan:
   - get: seven-pm-weekdays
     trigger: true
-  - get: spin-gke-cluster
+  - get: eso-infra-repo
     passed: [spin-gke-cluster]
   - put: terraform-eso  
     params:
