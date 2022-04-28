@@ -1,3 +1,9 @@
+terraform-common: &terraform-common
+  backend_type: gcs
+  env_name: development
+  env:
+    GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+
 resource_types:
 - name: terraform
   type: docker-image
@@ -14,11 +20,11 @@ resources:
     uri: https://github.com/EngineerBetter/eso-infrastructure.git
     branch: master
     
-- name: terraform
+- name: terraform-gke
   type: terraform
   icon: terraform
-  source:
-    backend_type: gcs
+  source: 
+    <<: *terraform-common
     backend_config:
       bucket: terraform-state-eso
       prefix: terraform/state
@@ -27,9 +33,19 @@ resources:
       zone: europe-west2-a
       project: kubernetes-cluster-eso
       service_account: concourse@kubernetes-cluster-eso.iam.gserviceaccount.com
-    env_name: development
-    env:
-      GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+
+- name: terraform-eso
+  type: terraform
+  icon: terraform
+  source:
+    <<: *terraform-common
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/eso
+    vars:
+      region: europe-west2
+      zone: europe-west2-a
+      project: kubernetes-cluster-eso
 
 jobs:
 - name: set-pipeline
@@ -45,6 +61,15 @@ jobs:
   - get: eso-infra-repo
     trigger: true
     passed: [set-pipeline]
-  - put: terraform
+  - put: terraform-gke
     params:
-      terraform_source: eso-infra-repo/terraform
+      terraform_source: eso-infra-repo/terraform/gke
+
+- name: install-eso
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+    passed: [spin-gke-cluster]
+  - put: terraform-eso
+    params:
+      terraform_source: eso-infra-repo/terraform/eso
