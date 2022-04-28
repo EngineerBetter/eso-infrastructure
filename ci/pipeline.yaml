@@ -66,13 +66,13 @@ resources:
 #     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
 jobs:
-- name: set-pipeline
-  serial: true
-  plan:
-  - get: eso-infra-repo
-    trigger: true
-  - set_pipeline: self
-    file: eso-infra-repo/ci/pipeline.yaml
+# - name: set-pipeline
+#   serial: true
+#   plan:
+#   - get: eso-infra-repo
+#     trigger: true
+#   - set_pipeline: self
+#     file: eso-infra-repo/ci/pipeline.yaml
 
 - name: spin-gke-cluster
   plan:
@@ -102,7 +102,7 @@ jobs:
     passed: [spin-gke-cluster]
   - put: terraform-eso  
     params:
-      terraform-source: eso-infra-repo/terraform/eso
+      terraform_source: eso-infra-repo/terraform/eso
       action: destroy
     get_params:
       action: destroy
