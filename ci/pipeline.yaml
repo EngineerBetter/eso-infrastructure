@@ -56,14 +56,14 @@ resources:
     location: Europe/London
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
-- name: seven-pm-weekdays
-  type: time
-  icon: clock-outline
-  source:
-    start: 7:00 PM
-    stop: 7:55 AM
-    location: Europe/London
-    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+# - name: seven-pm-weekdays
+#   type: time
+#   icon: clock-outline
+#   source:
+#     start: 7:00 PM
+#     stop: 7:55 AM
+#     location: Europe/London
+#     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
 jobs:
 - name: set-pipeline
@@ -96,8 +96,8 @@ jobs:
 
 - name: destroy-gke-cluster
   plan:
-  - get: seven-pm-weekdays
-    trigger: true
+  # - get: seven-pm-weekdays
+  #   trigger: true
   - get: eso-infra-repo
     passed: [spin-gke-cluster]
   - put: terraform-eso  
