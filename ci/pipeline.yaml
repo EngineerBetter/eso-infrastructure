@@ -6,15 +6,17 @@ resource_types:
     tag: latest
 
 resources:
-- name: kubernetes-repo
+- name: eso-infra-repo
   type: git
+  icon: github
   check_every: 15m
   source:
-    uri: https://github.com/EngineerBetter/kubernetes-cluster-eso.git
+    uri: https://github.com/EngineerBetter/eso-infrastructure.git
     branch: master
     
 - name: terraform
   type: terraform
+  icon: terraform
   source:
     backend_type: gcs
     backend_config:
@@ -28,19 +30,21 @@ resources:
     env_name: development
     env:
       GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+
 jobs:
 - name: set-pipeline
   serial: true
   plan:
-  - get: kubernetes-repo
+  - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
-    file: kubernetes-repo/ci/pipeline.yaml
-- name: run-terraform
+    file: eso-infra-repo/ci/pipeline.yaml
+
+- name: spin-gke-cluster
   plan:
-  - get: kubernetes-repo
+  - get: eso-infra-repo
     trigger: true
     passed: [set-pipeline]
   - put: terraform
     params:
-      terraform_source: kubernetes-repo/terraform
+      terraform_source: eso-infra-repo/terraform
