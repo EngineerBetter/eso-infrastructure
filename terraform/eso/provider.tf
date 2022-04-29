@@ -7,7 +7,7 @@ provider "google" {
 data "google_client_config" "provider" {}
 
 data "google_container_cluster" "primary" {
-    name     = "my-gke-cluster-${var.project}"
+    name     = "${var.project}"
     location = var.region
 }
 
