@@ -8,7 +8,7 @@ data "google_client_config" "provider" {}
 
 data "google_container_cluster" "primary" {
     name     = "${var.project}"
-    location = var.region
+    location = var.zone
 }
 
 provider "helm" {
