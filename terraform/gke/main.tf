@@ -8,7 +8,7 @@ resource "google_service_account" "default" {
 
 resource "google_container_cluster" "primary" {
   name     = "${var.project}"
-  location = var.region
+  location = var.zone
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -50,7 +50,7 @@ resource "google_compute_network" "vpc" {
 # Subnet
 resource "google_compute_subnetwork" "subnet" {
   name          = "${var.project}-subnet"
-  region        = var.region
+  region        = var.zone
   network       = google_compute_network.vpc.name
   ip_cidr_range = "10.10.0.0/24"
 }
