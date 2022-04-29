@@ -32,3 +32,13 @@ jobs:
     passed: [set-pipeline]
   - task: lint-files
     file: eso-infra-repo/ci/tasks/golint.yaml
+
+- name: test
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+  - get: eso-infra-repo
+    trigger: true
+    passed: [set-pipeline]
+  - task: run-unit-tests
+    file: eso-infra-repo/ci/tasks/gotest.yaml
