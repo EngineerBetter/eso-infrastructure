@@ -23,7 +23,7 @@ jobs:
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-tests.yaml
 
-- name: make-lint
+- name: lint
   plan:
   - get: external-secrets-repo
     trigger: true
