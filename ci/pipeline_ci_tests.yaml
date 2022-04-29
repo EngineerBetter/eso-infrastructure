@@ -27,5 +27,8 @@ jobs:
   plan:
   - get: external-secrets-repo
     trigger: true
+  - get: eso-infra-repo
+    trigger: true
+    passed: [set-pipeline]
   - task: lint-files
-    file: tasks/golint.yaml
+    file: eso-infra-repo/ci/tasks/golint.yaml
