@@ -5,6 +5,7 @@ resources:
   check_every: 15m
   source:
     uri: https://github.com/external-secrets/external-secrets
+    branch: beach-team
 
 - name: eso-infra-repo
   type: git
