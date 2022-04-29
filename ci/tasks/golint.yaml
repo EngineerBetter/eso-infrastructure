@@ -14,4 +14,4 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-repo
-    golangci-lint run
+    GO_VERSION=1.17 golangci-lint run
