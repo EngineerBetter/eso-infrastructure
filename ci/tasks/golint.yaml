@@ -2,7 +2,7 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: golangci/golangci-lint}
+  source: {repository: golang:1.17.9-bullseye}
 
 inputs:
 - name: external-secrets-repo
@@ -14,4 +14,5 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-repo
-    GO_VERSION=1.17 golangci-lint run
+    make lint.install
+    make lint
