@@ -17,5 +17,6 @@ run:
     set -euo pipefail
     cd external-secrets-repo
     go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+    go install github.com/mikefarah/yq/v4@latest
     setup-envtest use -p path 1.20.2
     make test
