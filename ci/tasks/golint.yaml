@@ -10,7 +10,7 @@ inputs:
 run:
   path: bash
   args:
-  - c
+  - -c
   - |
     set -euo pipefail
     cd external-secret-repo
