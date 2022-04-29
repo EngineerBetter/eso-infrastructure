@@ -1,0 +1,31 @@
+resources:
+- name: external-secrets-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+
+- name: eso-infra-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/EngineerBetter/eso-infrastructure.git
+    branch: master
+
+jobs:
+- name: set-pipeline
+  serial: true
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+  - set_pipeline: self
+    file: eso-infra-repo/ci/pipeline_ci_tests.yaml
+
+- name: make-lint
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+  - task: lint-files
+    file: tasks/golint.yaml
