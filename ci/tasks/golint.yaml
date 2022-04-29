@@ -13,5 +13,5 @@ run:
   - -c
   - |
     set -euo pipefail
-    cd external-secret-repo
+    cd external-secrets-repo
     golangci-lint run
