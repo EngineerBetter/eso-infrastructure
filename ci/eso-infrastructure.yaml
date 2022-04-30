@@ -3,6 +3,10 @@ terraform-common: &terraform-common
   env_name: development
   env:
     GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+  vars:
+    region: europe-west2
+    zone: europe-west2-a
+    project: kubernetes-cluster-eso
 
 resource_types:
 - name: terraform
@@ -28,11 +32,6 @@ resources:
     backend_config:
       bucket: terraform-state-eso
       prefix: terraform/state
-    vars:
-      region: europe-west2
-      zone: europe-west2-a
-      project: kubernetes-cluster-eso
-      service_account: concourse@kubernetes-cluster-eso.iam.gserviceaccount.com
 
 - name: terraform-eso
   type: terraform
@@ -42,10 +41,6 @@ resources:
     backend_config:
       bucket: terraform-state-eso
       prefix: terraform/state/eso
-    vars:
-      region: europe-west2
-      zone: europe-west2-a
-      project: kubernetes-cluster-eso
 
 - name: eight-am-weekdays
   type: time
