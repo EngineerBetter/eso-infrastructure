@@ -70,6 +70,7 @@ jobs:
     file: eso-infra-repo/ci/eso-infrastructure.yaml
 
 - name: spin-gke-cluster
+  serial: true
   plan:
   - get: eight-am-weekdays
     trigger: true
@@ -93,17 +94,12 @@ jobs:
       terraform_source: eso-infra-repo/terraform/eso
 
 - name: destroy-gke-cluster
+  serial: true
   plan:
   - get: seven-pm-weekdays
     trigger: true
   - get: eso-infra-repo
     passed: [spin-gke-cluster]
-  - put: terraform-eso  
-    params:
-      terraform_source: eso-infra-repo/terraform/eso
-      action: destroy
-    get_params:
-      action: destroy   
   - put: terraform-gke  
     params:
       terraform_source: eso-infra-repo/terraform/gke
