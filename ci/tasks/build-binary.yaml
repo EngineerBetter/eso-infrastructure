@@ -21,3 +21,4 @@ run:
     cd external-secrets-repo
     go install github.com/mikefarah/yq/v4@latest
     make build
+    make helm.generate
