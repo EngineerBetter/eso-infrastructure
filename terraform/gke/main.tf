@@ -1,9 +1,6 @@
 resource "google_service_account" "default" {
   account_id   = "node-pool-eso"
   display_name = "Service account for node pools"
-  depends_on = [
-    google_project_service.iam
-  ]
 }
 
 resource "google_container_cluster" "primary" {
@@ -18,9 +15,6 @@ resource "google_container_cluster" "primary" {
   
   network = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
-  depends_on = [
-    google_project_service.container
-  ]
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
@@ -53,14 +47,4 @@ resource "google_compute_subnetwork" "subnet" {
   region        = var.region
   network       = google_compute_network.vpc.name
   ip_cidr_range = "10.10.0.0/24"
-}
-
-resource "google_project_service" "iam" {
-  service = "iam.googleapis.com"
-  disable_on_destroy = false
-}
-
-resource "google_project_service" "container" {
-  service = "container.googleapis.com"
-  disable_on_destroy = false
 }

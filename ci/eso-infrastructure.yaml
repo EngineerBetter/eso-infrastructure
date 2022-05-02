@@ -23,7 +23,16 @@ resources:
   source:
     uri: https://github.com/EngineerBetter/eso-infrastructure.git
     branch: master
-    
+
+- name: terraform-project
+  type: terraform
+  icon: terraform
+  source:
+    <<: *terraform-common
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/project
+
 - name: terraform-gke
   type: terraform
   icon: terraform
@@ -80,12 +89,20 @@ jobs:
     trigger: true
   - get: eso-infra-repo
 
+- name: setup-project
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+    passed: [set-pipeline]
+  - put: terraform-project
+    params:
+      terraform_source: eso-infra-repo/terraform/project
 
 - name: spin-gke-cluster
   plan:
   - get: eso-infra-repo
     trigger: true
-    passed: [set-pipeline, check-working-hours]
+    passed: [setup-project, check-working-hours]
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
