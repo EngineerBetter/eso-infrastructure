@@ -74,6 +74,13 @@ jobs:
     trigger: true
   - get: eso-infra-repo
 
+- name: check-outside-working-hours
+  plan:
+  - get: seven-pm-weekdays
+    trigger: true
+  - get: eso-infra-repo
+
+
 - name: spin-gke-cluster
   plan:
   - get: eso-infra-repo
@@ -92,19 +99,22 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/eso
 
-- name: check-outside-working-hours
-  plan:
-  - get: seven-pm-weekdays
-    trigger: true
-  - get: eso-infra-repo
-
 
 - name: destroy-gke-cluster
+  serial: true
   plan:
   - get: eso-infra-repo
     trigger: true
     passed: [check-outside-working-hours, spin-gke-cluster]
-  - put: terraform-gke  
+
+  - put: terraform-eso
+    params:
+      terraform_source: eso-infra-repo/terraform/eso
+      action: destroy
+    get_params:
+      action: destroy
+
+  - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
       action: destroy
