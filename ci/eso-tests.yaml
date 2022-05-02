@@ -121,6 +121,6 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/eso
       vars:
-        helm_charts_dir: /external-secrets-repo/deploy/charts/external-secrets
+        helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
         image_version: latest
