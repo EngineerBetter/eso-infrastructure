@@ -12,3 +12,16 @@ variable "zone" {
   type = string
   default = "europe-west2-a"
 }
+
+
+variable "image_version" {
+  type = string
+}
+
+variable "image_registry" {
+  type = string 
+}
+
+variable "helm_charts_dir" {
+  type = string
+}

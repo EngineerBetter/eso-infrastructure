@@ -7,6 +7,22 @@ resources:
     uri: https://github.com/external-secrets/external-secrets
     branch: beach-team
 
+- name: terraform-eso
+  type: terraform
+  icon: terraform
+  source:
+    backend_type: gcs
+    env_name: development
+    env:
+      GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+    vars:
+      region: europe-west2
+      zone: europe-west2-a
+      project: kubernetes-cluster-eso
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/eso
+
 - name: eso-infra-repo
   type: git
   icon: github
@@ -83,3 +99,20 @@ jobs:
       tag_file: eso-docker-tag/version
       tag_as_latest: true
     get_params: {skip_download: true}
+
+- name: deploy
+  plan:
+  - get: eso-docker-tag
+  - get: eso-infra-repo
+    trigger: true
+    passed: [build]
+  - get: external-secrets-repo
+    trigger: true
+    passed: [build]
+  - put: terraform-eso
+    params:
+      terraform_source: eso-infra-repo/terraform/eso
+      vars:
+        helm_charts_dir: external-secrets-repo/deploy/charts/external-secrets
+        image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
+        image_version: latest

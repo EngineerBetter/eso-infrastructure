@@ -42,15 +42,6 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state
 
-- name: terraform-eso
-  type: terraform
-  icon: terraform
-  source:
-    <<: *terraform-common
-    backend_config:
-      bucket: terraform-state-eso
-      prefix: terraform/state/eso
-
 - name: eight-am-weekdays
   type: time
   icon: clock-outline
@@ -107,15 +98,6 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/gke
 
-- name: install-eso
-  plan:
-  - get: eso-infra-repo
-    trigger: true
-    passed: [check-working-hours, spin-gke-cluster]
-  - put: terraform-eso
-    params:
-      terraform_source: eso-infra-repo/terraform/eso
-
 
 - name: destroy-gke-cluster
   serial: true
@@ -123,13 +105,6 @@ jobs:
   - get: eso-infra-repo
     trigger: true
     passed: [check-outside-working-hours, spin-gke-cluster]
-
-  - put: terraform-eso
-    params:
-      terraform_source: eso-infra-repo/terraform/eso
-      action: destroy
-    get_params:
-      action: destroy
 
   - put: terraform-gke
     params:
