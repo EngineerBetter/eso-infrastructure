@@ -3,6 +3,11 @@ resource "google_service_account" "default" {
   display_name = "Service account for node pools"
 }
 
+resource "google_project_iam_member" "acr" {
+  project = var.project
+  role    = "roles/artifactregistry.reader"
+  member  = google_service_account.default.email
+}
 resource "google_container_cluster" "primary" {
   name     = "${var.project}"
   location = var.zone
