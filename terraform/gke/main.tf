@@ -6,7 +6,7 @@ resource "google_service_account" "default" {
 resource "google_project_iam_member" "acr" {
   project = var.project
   role    = "roles/artifactregistry.reader"
-  member  = google_service_account.default.email
+  member  = "serviceAccount:${google_service_account.default.email}"
 }
 resource "google_container_cluster" "primary" {
   name     = "${var.project}"
