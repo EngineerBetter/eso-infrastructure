@@ -57,16 +57,19 @@ jobs:
     trigger: true
   - get: eso-infra-repo
     trigger: true
-    passed: [set-pipeline]
+    passed: [lint]
   - task: run-unit-tests
     file: eso-infra-repo/ci/tasks/gotest.yaml
 
 - name: build
   serial: true
   plan:
+  - get: eso-infra-repo
+    trigger: true
+    passed: [test]
   - get: external-secrets-repo
     trigger: true
-    passed: [test, lint]
+    passed: [test]
   - get: eso-docker-tag
     params: {bump: minor}
   - task: go-build
