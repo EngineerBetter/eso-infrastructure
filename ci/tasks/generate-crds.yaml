@@ -20,4 +20,4 @@ run:
     set -euo pipefail
     cd external-secrets-repo
     go install github.com/mikefarah/yq/v4@latest
-    make build-amd64
+    make helm.generate

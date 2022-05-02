@@ -117,6 +117,8 @@ jobs:
   - get: external-secrets-repo
     trigger: true
     passed: [build]
+  - task: generate-crds
+    file: eso-infra-repo/ci/tasks/generate-crds.yaml
   - put: terraform-eso
     params:
       terraform_source: eso-infra-repo/terraform/eso
