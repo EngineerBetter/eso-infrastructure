@@ -62,49 +62,59 @@ resources:
 
 jobs:
 - name: set-pipeline
-  serial: true
   plan:
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-infrastructure.yaml
 
-- name: spin-gke-cluster
+- name: check-working-hours
   plan:
   - get: eight-am-weekdays
     trigger: true
   - get: eso-infra-repo
+
+- name: check-outside-working-hours
+  plan:
+  - get: seven-pm-weekdays
     trigger: true
-    passed: [set-pipeline]
+  - get: eso-infra-repo
+
+
+- name: spin-gke-cluster
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+    passed: [set-pipeline, check-working-hours]
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
 
 - name: install-eso
   plan:
-  - get: eight-am-weekdays
-    trigger: true
-    passed: [spin-gke-cluster]
   - get: eso-infra-repo
     trigger: true
-    passed: [spin-gke-cluster]
+    passed: [check-working-hours, spin-gke-cluster]
   - put: terraform-eso
     params:
       terraform_source: eso-infra-repo/terraform/eso
 
+
 - name: destroy-gke-cluster
+  serial: true
   plan:
-  - get: seven-pm-weekdays
-    trigger: true
   - get: eso-infra-repo
-    passed: [spin-gke-cluster]
-  - put: terraform-eso  
+    trigger: true
+    passed: [check-outside-working-hours, spin-gke-cluster]
+
+  - put: terraform-eso
     params:
       terraform_source: eso-infra-repo/terraform/eso
       action: destroy
     get_params:
-      action: destroy   
-  - put: terraform-gke  
+      action: destroy
+
+  - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
       action: destroy
