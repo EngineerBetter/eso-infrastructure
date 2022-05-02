@@ -6,17 +6,6 @@ resource "google_service_account" "default" {
   ]
 }
 
-resource "google_artifact_registry_repository" "eso" {
-  provider = google-beta
-
-  location = "europe-west2"
-  repository_id = "eso"
-  description = "repository for all eso-related images"
-  format = "DOCKER"
-  depends_on = [
-    google_project_service.artifactregistry
-  ]
-}
 resource "google_container_cluster" "primary" {
   name     = "${var.project}"
   location = var.zone
@@ -75,9 +64,3 @@ resource "google_project_service" "container" {
   service = "container.googleapis.com"
   disable_on_destroy = false
 }
-
-resource "google_project_service" "artifactregistry" {
-  service = "artifactregistry.googleapis.com"
-  disable_on_destroy = false
-}
-
