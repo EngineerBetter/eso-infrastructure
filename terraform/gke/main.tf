@@ -13,6 +13,9 @@ resource "google_artifact_registry_repository" "eso" {
   repository_id = "eso"
   description = "repository for all eso-related images"
   format = "DOCKER"
+  depends_on = [
+    google_project_service.artifactregistry
+  ]
 }
 resource "google_container_cluster" "primary" {
   name     = "${var.project}"
