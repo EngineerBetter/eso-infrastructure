@@ -15,6 +15,21 @@ resources:
     uri: https://github.com/EngineerBetter/eso-infrastructure.git
     branch: master
 
+- name: eso-image
+  type: docker-image
+  source:
+    repository: europe-west2-docker.pkg.dev/beach-team-eso/eso-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
+
+- name: eso-docker-tag
+  type: semver
+  source:
+    driver: gcs
+    key: tags/eso-image
+    bucket: terraform-state-eso
+    json_key: ((gcp_concourse_iam))
+
 jobs:
 - name: set-pipeline
   serial: true
@@ -43,3 +58,22 @@ jobs:
     passed: [set-pipeline]
   - task: run-unit-tests
     file: eso-infra-repo/ci/tasks/gotest.yaml
+
+- name: build
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+    passed: [test, lint]
+  - get: eso-docker-tag
+    params: {bump: minor}
+  - task: go-build
+    file: eso-infra-repo/ci/tasks/build-binary.yaml
+  - put: eso-image
+    params:
+      build: external-secrets-repo
+      build_args:
+        TARGETOS: linux
+        TARGETARCH: amd64
+      tag_file: eso-docker-tag/version
+      tag_as_latest: true
+    get_params: {skip_download: true}
