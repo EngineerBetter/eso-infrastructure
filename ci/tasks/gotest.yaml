@@ -20,4 +20,4 @@ run:
     go install github.com/mikefarah/yq/v4@latest
     setup-envtest use -p path 1.20.2
     source <(setup-envtest use 1.20.2 -p env --os $(go env GOOS) --arch $(go env GOARCH))
-    make test
+    go test -v $(go list ./... | grep -v e2e)
