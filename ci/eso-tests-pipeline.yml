@@ -60,7 +60,7 @@ jobs:
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
-    file: eso-infra-repo/ci/eso-tests.yaml
+    file: eso-infra-repo/ci/eso-tests-pipeline.yml
 
 - name: lint
   serial: true
@@ -71,7 +71,7 @@ jobs:
     trigger: true
     passed: [set-pipeline]
   - task: lint-files
-    file: eso-infra-repo/ci/tasks/golint.yaml
+    file: eso-infra-repo/ci/tasks/golint.yml
 
 - name: test
   serial: true
@@ -83,7 +83,7 @@ jobs:
     trigger: true
     passed: [lint]
   - task: run-unit-tests
-    file: eso-infra-repo/ci/tasks/gotest.yaml
+    file: eso-infra-repo/ci/tasks/gotest.yml
 
 - name: build
   serial: true
@@ -97,7 +97,7 @@ jobs:
   - get: eso-docker-tag
     params: {bump: minor}
   - task: go-build
-    file: eso-infra-repo/ci/tasks/build-binary.yaml
+    file: eso-infra-repo/ci/tasks/build-binary.yml
   - put: eso-image
     params:
       build: external-secrets-repo
@@ -118,7 +118,7 @@ jobs:
     trigger: true
     passed: [build]
   - task: generate-crds
-    file: eso-infra-repo/ci/tasks/generate-crds.yaml
+    file: eso-infra-repo/ci/tasks/generate-crds.yml
   - put: terraform-eso
     params:
       terraform_source: eso-infra-repo/terraform/eso

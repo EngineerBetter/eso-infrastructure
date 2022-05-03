@@ -66,17 +66,11 @@ jobs:
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
-    file: eso-infra-repo/ci/eso-infrastructure.yaml
+    file: eso-infra-repo/ci/eso-infrastructure-pipeline.yml
 
 - name: check-working-hours
   plan:
   - get: eight-am-weekdays
-    trigger: true
-  - get: eso-infra-repo
-
-- name: check-outside-working-hours
-  plan:
-  - get: seven-pm-weekdays
     trigger: true
   - get: eso-infra-repo
 
@@ -93,18 +87,19 @@ jobs:
   plan:
   - get: eso-infra-repo
     trigger: true
-    passed: [setup-project, check-working-hours]
+    passed: check-working-hours
+  - get: eight-am-weekdays
+    trigger: yes   
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
-
 
 - name: destroy-gke-cluster
   serial: true
   plan:
   - get: eso-infra-repo
+  - get: seven-pm-weekdays
     trigger: true
-    passed: [check-outside-working-hours, spin-gke-cluster]
 
   - put: terraform-gke
     params:
