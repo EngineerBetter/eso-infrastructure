@@ -87,9 +87,9 @@ jobs:
   plan:
   - get: eso-infra-repo
     trigger: true
-    passed: check-working-hours
+    passed: [check-working-hours]
   - get: eight-am-weekdays
-    trigger: yes   
+    trigger: true   
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
