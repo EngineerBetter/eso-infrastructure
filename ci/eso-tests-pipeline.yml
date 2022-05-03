@@ -63,7 +63,6 @@ jobs:
     file: eso-infra-repo/ci/eso-tests-pipeline.yml
 
 - name: unit-tests
-  serial: true
   plan:
   - get: external-secrets-repo
     trigger: true
