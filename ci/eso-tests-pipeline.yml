@@ -67,7 +67,6 @@ jobs:
   - get: external-secrets-repo
     trigger: true
   - get: eso-infra-repo
-    trigger: true
     passed: [set-pipeline]
   - in_parallel:
     - task: lint-files
@@ -79,7 +78,6 @@ jobs:
   serial: true
   plan:
   - get: eso-infra-repo
-    trigger: true
     passed: [unit-tests]
   - get: external-secrets-repo
     trigger: true
@@ -101,8 +99,8 @@ jobs:
 - name: deploy
   plan:
   - get: eso-docker-tag
+    passed: [build]
   - get: eso-infra-repo
-    trigger: true
     passed: [build]
   - get: external-secrets-repo
     trigger: true
