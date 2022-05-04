@@ -14,7 +14,7 @@ variable "zone" {
 }
 
 
-variable "image_version" {
+variable "version_file" {
   type = string
 }
 

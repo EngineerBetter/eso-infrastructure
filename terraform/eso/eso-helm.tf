@@ -18,15 +18,15 @@ resource "helm_release" "external-secrets" {
 
     set {
     name  = "image.tag"
-    value = var.image_version
+    value = file(var.version_file)
   }
     set {
     name  = "webhook.image.tag"
-    value = var.image_version
+    value = file(var.version_file)
   }
     set {
     name  = "certController.image.tag"
-    value = var.image_version
+    value = file(var.version_file)
   }
     set {
     name  = "image.pullPolicy"

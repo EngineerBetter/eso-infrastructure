@@ -95,6 +95,8 @@ jobs:
       tag_file: eso-docker-tag/version
       tag_as_latest: true
     get_params: {skip_download: true}
+  - put: eso-docker-tag
+    params: {file: eso-docker-tag/version}
 
 - name: deploy
   plan:
@@ -113,4 +115,4 @@ jobs:
       vars:
         helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
-        image_version: latest
+        version_file: ../../../eso-docker-tag/version
