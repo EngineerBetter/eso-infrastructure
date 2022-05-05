@@ -68,12 +68,6 @@ jobs:
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-infrastructure-pipeline.yml
 
-- name: check-working-hours
-  plan:
-  - get: eight-am-weekdays
-    trigger: true
-  - get: eso-infra-repo
-
 - name: setup-project
   plan:
   - get: eso-infra-repo
@@ -86,8 +80,6 @@ jobs:
 - name: spin-gke-cluster
   plan:
   - get: eso-infra-repo
-    trigger: true
-    passed: [check-working-hours]
   - get: eight-am-weekdays
     trigger: true   
   - put: terraform-gke
