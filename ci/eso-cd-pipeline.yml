@@ -131,12 +131,29 @@ jobs:
       terraform_source: eso-infra-repo/terraform/gke
 
 - name: destroy-gke-cluster
-  serial: true
   plan:
   - get: eso-infra-repo
   - get: seven-pm-weekdays
     trigger: true
+  - put: terraform-gke
+    params:
+      terraform_source: eso-infra-repo/terraform/gke
+      action: destroy
+    get_params:
+      action: destroy
 
+# ------- for manual spin/destroy actions -----------------------------------------------
+
+- name: manual-spin-gke-cluster
+  plan:
+  - get: eso-infra-repo
+  - put: terraform-gke
+    params:
+      terraform_source: eso-infra-repo/terraform/gke
+
+- name: manual-destroy-gke-cluster
+  plan:
+  - get: eso-infra-repo
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
