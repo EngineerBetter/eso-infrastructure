@@ -75,6 +75,7 @@ jobs:
   plan:
   - get: external-secrets-repo
     trigger: true
+    passed: [lint]
   - get: eso-infra-repo
     passed: [lint]
   - task: run-unit-tests
