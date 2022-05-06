@@ -62,17 +62,23 @@ jobs:
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-tests-pipeline.yml
 
-- name: unit-tests
+- name: lint
   plan:
   - get: external-secrets-repo
     trigger: true
   - get: eso-infra-repo
     passed: [set-pipeline]
-  - in_parallel:
-    - task: lint-files
-      file: eso-infra-repo/ci/tasks/golint.yml
-    - task: run-unit-tests
-      file: eso-infra-repo/ci/tasks/gotest.yml
+  - task: lint-files
+    file: eso-infra-repo/ci/tasks/golint.yml
+
+- name: unit-tests
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+  - get: eso-infra-repo
+    passed: [lint]
+  - task: run-unit-tests
+    file: eso-infra-repo/ci/tasks/gotest.yml
 
 - name: build
   serial: true
