@@ -1,0 +1,209 @@
+---
+terraform-common: &terraform-common
+  backend_type: gcs
+  env_name: development
+  env:
+    GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+  vars:
+    region: europe-west2
+    zone: europe-west2-a
+    project: kubernetes-cluster-eso
+
+resource_types:
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+    tag: latest
+
+resources:
+- name: eso-infra-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/EngineerBetter/eso-infrastructure.git
+    branch: master
+
+- name: external-secrets-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    #TODO: parametrize to be utilised by multiple ESO teams
+    branch: beach-team 
+
+- name: terraform-project
+  type: terraform
+  icon: terraform
+  source:
+    <<: *terraform-common
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/project
+
+- name: terraform-gke
+  type: terraform
+  icon: terraform
+  source: 
+    <<: *terraform-common
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state
+
+- name: eight-am-weekdays
+  type: time
+  icon: clock-outline
+  source:
+    start: 8:00 AM
+    stop: 6:55 PM
+    location: Europe/London
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+- name: seven-pm-weekdays
+  type: time
+  icon: clock-outline
+  source:
+    start: 7:00 PM
+    stop: 7:55 AM
+    location: Europe/London
+    days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+- name: terraform-eso
+  type: terraform
+  icon: terraform
+  source:
+    backend_type: gcs
+    env_name: development
+    env:
+      GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+    vars:
+      region: europe-west2
+      zone: europe-west2-a
+      project: kubernetes-cluster-eso
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/eso
+
+- name: eso-image
+  type: docker-image
+  source:
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
+
+- name: eso-docker-tag
+  type: semver
+  source:
+    driver: gcs
+    key: tags/eso-image
+    bucket: terraform-state-eso
+    json_key: ((gcp_concourse_iam))
+
+
+jobs:
+- name: set-pipeline
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+  - set_pipeline: self
+    file: eso-infra-repo/ci/eso-cd-pipeline.yml
+
+#----------------------------- infra part -----------------------------------------------
+
+- name: setup-project
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+    passed: [set-pipeline]
+  - put: terraform-project
+    params:
+      terraform_source: eso-infra-repo/terraform/project
+
+- name: spin-gke-cluster
+  plan:
+  - get: eso-infra-repo
+  - get: eight-am-weekdays
+    trigger: true   
+  - put: terraform-gke
+    params:
+      terraform_source: eso-infra-repo/terraform/gke
+
+- name: destroy-gke-cluster
+  serial: true
+  plan:
+  - get: eso-infra-repo
+  - get: seven-pm-weekdays
+    trigger: true
+
+  - put: terraform-gke
+    params:
+      terraform_source: eso-infra-repo/terraform/gke
+      action: destroy
+    get_params:
+      action: destroy
+
+#---------------------------------- code part -------------------------------------------
+
+- name: lint
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+  - get: eso-infra-repo
+    passed: [set-pipeline]
+  - task: lint-files
+    file: eso-infra-repo/ci/tasks/golint.yml
+
+- name: unit-tests
+  plan:
+  - get: external-secrets-repo
+    trigger: true
+    passed: [lint]
+  - get: eso-infra-repo
+    passed: [lint]
+  - task: run-unit-tests
+    file: eso-infra-repo/ci/tasks/gotest.yml
+
+- name: build
+  serial: true
+  plan:
+  - get: eso-infra-repo
+    passed: [unit-tests]
+  - get: external-secrets-repo
+    trigger: true
+    passed: [unit-tests]
+  - get: eso-docker-tag
+    params: {bump: minor}
+  - task: go-build
+    file: eso-infra-repo/ci/tasks/build-binary.yml
+  - put: eso-image
+    params:
+      build: external-secrets-repo
+      build_args:
+        TARGETOS: linux
+        TARGETARCH: amd64
+      tag_file: eso-docker-tag/version
+      tag_as_latest: true
+    get_params: {skip_download: true}
+  - put: eso-docker-tag
+    params: {file: eso-docker-tag/version}
+
+- name: deploy
+  plan:
+  - get: eso-docker-tag
+    passed: [build]
+  - get: eso-infra-repo
+    passed: [build]
+  - get: external-secrets-repo
+    trigger: true
+    passed: [build]
+  - task: generate-crds
+    file: eso-infra-repo/ci/tasks/generate-crds.yml
+  - put: terraform-eso
+    params:
+      terraform_source: eso-infra-repo/terraform/eso
+      vars:
+        helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
+        image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
+        version_file: ../../../eso-docker-tag/version
