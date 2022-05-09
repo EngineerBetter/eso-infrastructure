@@ -101,6 +101,23 @@ resources:
     bucket: terraform-state-eso
     json_key: ((gcp_concourse_iam))
 
+#----------------------------- setup ---------------------------------------------------
+
+groups:
+- name: setup
+  jobs:
+  - set-pipeline
+  - setup-project
+- name: cluster-management
+  jobs:
+  - spin-gke-cluster
+  - destroy-gke-cluster
+- name: test-build-deploy
+  jobs:
+  - lint
+  - unit-tests
+  - build
+  - deploy
 
 jobs:
 - name: set-pipeline
@@ -109,8 +126,6 @@ jobs:
     trigger: true
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-cd-pipeline.yml
-
-#----------------------------- infra part -----------------------------------------------
 
 - name: setup-project
   plan:
@@ -121,12 +136,14 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/project
 
+#----------------------------- cluster management ---------------------------------------
+
 - name: spin-gke-cluster
   plan:
   - get: eso-infra-repo
     passed: [set-pipeline]
   - get: morning-trigger
-    trigger: true   
+    trigger: true
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
