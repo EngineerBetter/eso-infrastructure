@@ -104,20 +104,20 @@ resources:
 #----------------------------- setup ---------------------------------------------------
 
 groups:
-- name: setup
-  jobs:
-  - set-pipeline
-  - setup-project
-- name: cluster-management
-  jobs:
-  - spin-gke-cluster
-  - destroy-gke-cluster
 - name: test-build-deploy
   jobs:
   - lint
   - unit-tests
   - build
   - deploy
+- name: cluster-management
+  jobs:
+  - spin-gke-cluster
+  - destroy-gke-cluster
+- name: setup
+  jobs:
+  - set-pipeline
+  - setup-project
 
 jobs:
 - name: set-pipeline
