@@ -52,16 +52,16 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state
 
-- name: eight-am-weekdays
+- name: morning-trigger
   type: time
   icon: clock-outline
   source:
-    start: 8:00 AM
+    start: 9:00 AM
     stop: 6:55 PM
     location: Europe/London
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
-- name: seven-pm-weekdays
+- name: evening-trigger
   type: time
   icon: clock-outline
   source:
@@ -124,7 +124,8 @@ jobs:
 - name: spin-gke-cluster
   plan:
   - get: eso-infra-repo
-  - get: eight-am-weekdays
+    passed: [set-pipeline]
+  - get: morning-trigger
     trigger: true   
   - put: terraform-gke
     params:
@@ -133,27 +134,9 @@ jobs:
 - name: destroy-gke-cluster
   plan:
   - get: eso-infra-repo
-  - get: seven-pm-weekdays
+    passed: [set-pipeline]
+  - get: evening-trigger
     trigger: true
-  - put: terraform-gke
-    params:
-      terraform_source: eso-infra-repo/terraform/gke
-      action: destroy
-    get_params:
-      action: destroy
-
-# ------- for manual spin/destroy actions -----------------------------------------------
-
-- name: manual-spin-gke-cluster
-  plan:
-  - get: eso-infra-repo
-  - put: terraform-gke
-    params:
-      terraform_source: eso-infra-repo/terraform/gke
-
-- name: manual-destroy-gke-cluster
-  plan:
-  - get: eso-infra-repo
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
