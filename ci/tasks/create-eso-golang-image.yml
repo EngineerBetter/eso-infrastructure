@@ -7,10 +7,10 @@ image_resource:
     tag: 1.17.9-bullseye
 
 inputs:
-- name: external-secrets-repo-gosum
+- name: external-secrets-repo-gomod
 
-#outputs:
-#- name: external-secrets-repo
+outputs:
+- name: external-secrets-repo-gomod
 
 run:
   path: bash
@@ -18,7 +18,7 @@ run:
   - -c
   - |
     set -euo pipefail
-    cd external-secrets-repo-gosum
+    cd external-secrets-repo-gomod
     go mod tidy
     go install github.com/mikefarah/yq/v4@latest
     

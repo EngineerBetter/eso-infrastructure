@@ -34,7 +34,7 @@ resources:
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
-- name: external-secrets-repo-gosum
+- name: external-secrets-repo-gomod
   type: git
   icon: github
   check_every: 15m
@@ -143,7 +143,7 @@ groups:
 jobs:
 - name: set-pipeline
   plan:
-  - get: external-secrets-repo-gosum
+  - get: external-secrets-repo-gomod
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
@@ -187,7 +187,7 @@ jobs:
 - name: create-eso-golang-image
   serial: true
   plan:
-  - get: external-secrets-repo-gosum
+  - get: external-secrets-repo-gomod
     passed: [set-pipeline]
     trigger: true
   - get: eso-infra-repo
@@ -195,7 +195,7 @@ jobs:
     file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
   - put: eso-golang-image
     params:
-      build: external-secrets-repo-gosum
+      build: external-secrets-repo-gomod
       build_args:
         TARGETOS: linux
         TARGETARCH: amd64
