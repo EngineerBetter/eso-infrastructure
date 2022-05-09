@@ -18,7 +18,7 @@ run:
   - -c
   - |
     set -euo pipefail
-    cd external-secrets-repo
+    cd external-secrets-repo-gosum
     go mod tidy
     go install github.com/mikefarah/yq/v4@latest
     
