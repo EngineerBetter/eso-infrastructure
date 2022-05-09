@@ -196,9 +196,9 @@ jobs:
   - put: eso-golang-image
     params:
       build: external-secrets-repo-gomod
-      build_args:
-        TARGETOS: linux
-        TARGETARCH: amd64
+      # build_args:
+      #   TARGETOS: linux
+      #   TARGETARCH: amd64
 # TODO: tag with external-secrets-repo sha
 #     tag_file: eso-docker-tag/version
       tag_as_latest: true
