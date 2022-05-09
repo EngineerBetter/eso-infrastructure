@@ -34,6 +34,15 @@ resources:
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
+- name: external-secrets-repo-gosum
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    branch: main
+    paths: [go.sum]
+
 - name: terraform-project
   type: terraform
   icon: terraform
@@ -86,7 +95,15 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state/eso
 
-- name: eso-image
+
+- name: eso-golang-image
+  type: docker-image
+  source:
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-golang-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
+
+- name: eso-binary-image
   type: docker-image
   source:
     repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
@@ -97,7 +114,7 @@ resources:
   type: semver
   source:
     driver: gcs
-    key: tags/eso-image
+    key: tags/eso-binary-image
     bucket: terraform-state-eso
     json_key: ((gcp_concourse_iam))
 
@@ -119,9 +136,14 @@ groups:
   - set-pipeline
   - setup-project
 
+- name: golang-image
+  jobs:
+  - create-eso-golang-image
+
 jobs:
 - name: set-pipeline
   plan:
+  - get: external-secrets-repo-gosum
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
@@ -161,6 +183,27 @@ jobs:
     get_params:
       action: destroy
 
+# --------------------------------- build go deps image ---------------------------------
+- name: create-eso-golang-image
+  serial: true
+  plan:
+  - get: external-secrets-repo-gosum
+    passed: [set-pipeline]
+    trigger: true
+  - task: go-build
+    file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
+  - put: eso-golang-image
+    params:
+      build: external-secrets-repo-gosum
+      build_args:
+        TARGETOS: linux
+        TARGETARCH: amd64
+# TODO: tag with external-secrets-repo sha
+#     tag_file: eso-docker-tag/version
+      tag_as_latest: true
+    get_params: {skip_download: true}
+
+
 #---------------------------------- code part -------------------------------------------
 
 - name: lint
@@ -194,7 +237,7 @@ jobs:
     params: {bump: minor}
   - task: go-build
     file: eso-infra-repo/ci/tasks/build-binary.yml
-  - put: eso-image
+  - put: eso-binary-image
     params:
       build: external-secrets-repo
       build_args:
@@ -222,5 +265,5 @@ jobs:
       terraform_source: eso-infra-repo/terraform/eso
       vars:
         helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
-        image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-image
+        image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-binary-image
         version_file: ../../../eso-docker-tag/version
