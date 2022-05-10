@@ -4,7 +4,7 @@ set -euo pipefail
 TARGET=$(fly targets |grep "ci\.engineerbetter\.com" |awk '{print $1}')
 TEAM="kubernetes-eso"
 #TODO: have this read from pipeline config
-JOBS="lint unit-tests build deploy validation-tests"
+JOBS="set-pipeline lint unit-tests build deploy validation-tests"
 
 #TODO: detect from ../workspace/external-secrets branch
 PIPELINE="eso-cd"

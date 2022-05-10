@@ -1,0 +1,54 @@
+---
+resources:
+- name: eso-infra-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/EngineerBetter/eso-infrastructure.git
+    branch: master
+
+- name: external-secrets-repo-gomod
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    branch: main
+    paths: [go.sum]
+
+- name: eso-golang-image
+  type: docker-image
+  source:
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-golang-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
+
+jobs:
+- name: set-pipeline
+  plan:
+  - get: external-secrets-repo-gomod
+  - get: eso-infra-repo
+    trigger: true
+  - set_pipeline: self
+    file: eso-infra-repo/ci/eso-cd-pipeline.yml
+
+
+- name: create-eso-golang-image
+  plan:
+  - get: external-secrets-repo-gomod
+    passed: [set-pipeline]
+    trigger: true
+  - get: eso-infra-repo
+  - task: go-build
+    file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
+  - put: eso-golang-image
+    params:
+      build: external-secrets-repo-gomod
+      # build_args:
+      #   TARGETOS: linux
+      #   TARGETARCH: amd64
+# TODO: tag with external-secrets-repo sha
+#     tag_file: eso-docker-tag/version
+      tag_as_latest: true
+    get_params: {skip_download: true}
