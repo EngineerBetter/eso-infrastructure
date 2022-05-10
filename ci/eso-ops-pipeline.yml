@@ -31,7 +31,7 @@ jobs:
   - get: eso-infra-repo
     trigger: true
   - set_pipeline: self
-    file: eso-infra-repo/ci/eso-cd-pipeline.yml
+    file: eso-infra-repo/ci/eso-ops-pipeline.yml
 
 
 - name: create-eso-golang-image
