@@ -2,7 +2,7 @@ apiVersion: external-secrets.io/v1alpha1
 kind: SecretSink
 metadata:
   name: "hello-world"
-  namespace: my-ns # Same of the SecretStores
+  namespace: default # Same of the SecretStores
 spec:
   secretStoreRefs:
   - name: secret-store
