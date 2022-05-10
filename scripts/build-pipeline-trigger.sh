@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 TARGET=$(fly targets |grep "ci\.engineerbetter\.com" |awk '{print $1}')
 TEAM="kubernetes-eso"
 #TODO: have this read from pipeline config
