@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1alpha1
 kind: SecretSink
 metadata:
-  name: "hello-world"
+  name: validate-crd 
   namespace: default # Same of the SecretStores
 spec:
   secretStoreRefs:
