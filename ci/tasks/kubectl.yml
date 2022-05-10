@@ -31,7 +31,7 @@ run:
 
     echo "kubectl context: $(kubectl config current-context)"
 
-    YAML_TEST_FILE=$(ls eso-infrastructure/ci/tests/*.yaml);
+    YAML_TEST_FILE=$(ls eso-infra-repo/ci/tests/*.yaml);
     for TEST in $YAML_TEST_FILE; do
        echo "Applying kubectl for $TEST"
        kubectl apply -f eso-infra-repo/ci/tests/*
