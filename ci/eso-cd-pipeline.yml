@@ -268,3 +268,14 @@ jobs:
         helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-binary-image
         version_file: ../../../eso-docker-tag/version
+  
+- name: validation-tests
+  plan:
+  - get: eso-infra-repo
+    passed: [deploy]
+  - get: external-secrets-repo
+    passed: [deploy]
+    trigger: true
+  - task: apply-manifests
+    file: eso-infra-repo/ci/tasks/kubectl.yml
+

@@ -1,0 +1,24 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pcf-ops
+    tag: latest
+
+params:    
+  GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+
+inputs:
+- name: eso-infra-repo
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -euo pipefail
+    gcloud container clusters get-credentials kubernetes-cluster-eso \ 
+    --zone=europe-west2-a --project=kubernetes-cluster-eso
+    kubectl apply -f eso-infra-repo/ci/tests/*
+
