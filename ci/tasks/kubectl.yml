@@ -18,7 +18,12 @@ run:
   - -c
   - |
     set -euo pipefail
-    gcloud container clusters get-credentials kubernetes-cluster-eso \ 
-    --zone=europe-west2-a --project=kubernetes-cluster-eso
-    kubectl apply -f eso-infra-repo/ci/tests/*
+    gcloud container clusters get-credentials kubernetes-cluster-eso \
+           --zone=europe-west2-a --project=kubernetes-cluster-eso
+
+    YAML_TEST_FILE=$(ls eso-infrastructure/ci/tests/*.yaml);
+    for TEST in $YAML_TEST_FILE; do
+       echo "Applying kubectl for $TEST"
+       kubectl apply -f eso-infra-repo/ci/tests/*
+    done
 
