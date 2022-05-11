@@ -15,7 +15,7 @@ resources:
   source:
     uri: https://github.com/external-secrets/external-secrets
     branch: main
-    paths: [go.sum]
+    paths: [go.mod]
 
 - name: eso-golang-image
   type: docker-image
@@ -44,7 +44,7 @@ jobs:
     file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
   - put: eso-golang-image
     params:
-      build: external-secrets-repo-gomod
+      build: eso-infra-repo
       # build_args:
       #   TARGETOS: linux
       #   TARGETARCH: amd64
