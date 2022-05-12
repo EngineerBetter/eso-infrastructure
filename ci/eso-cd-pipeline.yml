@@ -214,6 +214,9 @@ jobs:
     passed: [build]
   - get: eso-infra-repo
     passed: [build]
+  - get: morning-trigger
+    passed: [spin-gke-cluster]
+    trigger: true
   - get: external-secrets-repo
     trigger: true
     passed: [build]
