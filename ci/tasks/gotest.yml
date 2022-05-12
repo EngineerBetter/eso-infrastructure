@@ -3,8 +3,10 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: golang
-    tag: 1.17.9-bullseye
+   repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-ops-image
+   username: _json_key
+   password: ((gcp_concourse_iam))
+
 
 inputs:
 - name: external-secrets-trunk
@@ -16,8 +18,6 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-trunk
-    go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
-    go install github.com/mikefarah/yq/v4@latest
     setup-envtest use -p path 1.20.2
     source <(setup-envtest use 1.20.2 -p env --os $(go env GOOS) --arch $(go env GOARCH))
     go test -v $(go list ./... | grep -v e2e)

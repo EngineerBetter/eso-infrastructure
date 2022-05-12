@@ -101,7 +101,8 @@ resources:
       project: kubernetes-cluster-eso
     backend_config:
       bucket: terraform-state-eso
-      prefix: terraform/state/eso
+#       prefix: terraform/state/eso
+
 - name: eso-binary-image
   type: docker-image
   source:
@@ -228,6 +229,7 @@ jobs:
   - put: eso-binary-image
     params:
       build: external-secrets-trunk
+      docker_buildkit: 1
       build_args:
         TARGETOS: linux
         TARGETARCH: amd64

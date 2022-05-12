@@ -17,10 +17,10 @@ resources:
     branch: main
     paths: [go.mod]
 
-- name: eso-golang-image
+- name: eso-ops-image
   type: docker-image
   source:
-    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-golang-image
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-ops-image
     username: _json_key
     password: ((gcp_concourse_iam))
 
@@ -34,21 +34,19 @@ jobs:
     file: eso-infra-repo/ci/eso-ops-pipeline.yml
 
 
-- name: create-eso-golang-image
+- name: create-eso-ops-image
   plan:
   - get: external-secrets-repo-gomod
     passed: [set-pipeline]
     trigger: true
   - get: eso-infra-repo
-  - task: create-iso-image
-    file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
-  - put: eso-golang-image
+  - task: prep-eso-ops-image
+    file: eso-infra-repo/ci/tasks/prep-eso-ops-image.yml
+  - put: eso-ops-image
     params:
-      build: eso-infra-repo/ci/tasks/eso-golang-dockerfile
-      # build_args:
-      #   TARGETOS: linux
-      #   TARGETARCH: amd64
-# TODO: tag with external-secrets-repo sha
-#     tag_file: eso-docker-tag/version
+      build: builddir
+      dockerfile: eso-infra-repo/ci/eso-ops/Dockerfile
+      docker_buildkit: 1
+      tag_file: external-secrets-repo-gomod/.git/ref
       tag_as_latest: true
     get_params: {skip_download: true}

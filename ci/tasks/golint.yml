@@ -3,8 +3,9 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: golang
-    tag: 1.17.9-bullseye
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-ops-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
 
 inputs:
 - name: external-secrets-trunk
@@ -16,5 +17,4 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-trunk
-    make lint.install
     golangci-lint run --timeout=5m --verbose

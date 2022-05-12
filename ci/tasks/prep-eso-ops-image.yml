@@ -1,0 +1,19 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: busybox
+
+inputs: 
+- name: external-secrets-repo-gomod
+outputs:
+- name: builddir
+
+run:
+  path: sh
+  args:
+    - -xeuc
+    - |
+      cp -r external-secrets-repo-gomod/ builddir/external-secrets
+
