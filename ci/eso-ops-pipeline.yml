@@ -44,7 +44,7 @@ jobs:
     file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
   - put: eso-golang-image
     params:
-      build: eso-infra-repo
+#      build: eso-infra-repo
       # build_args:
       #   TARGETOS: linux
       #   TARGETARCH: amd64
