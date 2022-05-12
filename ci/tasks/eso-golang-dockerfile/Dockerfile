@@ -1,4 +1,4 @@
-CMD ['echo "nothing to do here"']
+RUN ['echo "nothing to do here"']
 # FROM golang:1.17-bullseye
 
 # RUN cd ../../../../external-secrets-repo-gomod \
