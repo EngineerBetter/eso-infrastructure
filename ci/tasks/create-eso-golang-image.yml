@@ -8,6 +8,7 @@ image_resource:
 
 inputs:
 - name: external-secrets-repo-gomod
+- name: eso-infra-repo
 
 outputs:
 - name: external-secrets-repo-gomod
