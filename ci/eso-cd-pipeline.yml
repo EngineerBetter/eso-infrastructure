@@ -33,6 +33,14 @@ resources:
     uri: https://github.com/external-secrets/external-secrets
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
+
+- name: external-secrets-main-repo
+  type: git
+  icon: github
+  check_every: 15m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    branch: main
     
 - name: terraform-project
   type: terraform
@@ -137,6 +145,18 @@ jobs:
   - put: terraform-project
     params:
       terraform_source: eso-infra-repo/terraform/project
+
+- name: bump-from-main
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+  - get: external-secrets-main-repo
+    trigger: true
+  - get: external-secrets-repo
+  - task: merge-fastforward
+    file: eso-infra-repo/ci/tasks/merge-fastforward.yml
+  # - task: commit-and-push
+  #   file: eso-infra-repo/ci/tasks/commit-and-push.yml
 
 #----------------------------- cluster management ---------------------------------------
 
