@@ -19,7 +19,6 @@ run:
   - -c
   - |
     set -euo pipefail
-
     echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
       gcloud auth activate-service-account \
         --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
@@ -28,12 +27,18 @@ run:
     gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
-
     echo "kubectl context: $(kubectl config current-context)"
+    
+    echo -e "\n>> TEST[1/2] external-secrets-operator manifests"
 
     YAML_TEST_FILE=$(ls eso-infra-repo/ci/tests/*.yaml);
     for TEST in $YAML_TEST_FILE; do
        echo "Applying kubectl for $TEST"
-       kubectl apply -f eso-infra-repo/ci/tests/*
+       kubectl apply -f $TEST
+       echo
     done
 
+    echo -e "\n>> TEST[2/2] Validating CAPABILITES:ReadOnly"
+    set -x
+    kubectl get secretstore validate-secret-store-capabilities |grep ReadOnly
+    set +x

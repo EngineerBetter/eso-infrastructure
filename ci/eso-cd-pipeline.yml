@@ -234,6 +234,6 @@ jobs:
   - get: external-secrets-repo
     passed: [deploy]
     trigger: true
-  - task: apply-manifests
-    file: eso-infra-repo/ci/tasks/kubectl.yml
+  - task: run-validation-tests
+    file: eso-infra-repo/ci/tasks/validation-tests.yml
 
