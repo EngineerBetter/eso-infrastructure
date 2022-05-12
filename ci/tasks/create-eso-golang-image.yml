@@ -19,7 +19,7 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-repo-gomod
-    go mod tidy
+    go mod download
     go install github.com/mikefarah/yq/v4@latest
     
     # Using recommended install method for golangci-lint
