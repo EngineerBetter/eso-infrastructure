@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
 - name: external-secrets-repo-gomod
-- name: eso-infra-repo
 
 outputs:
 - name: external-secrets-repo-gomod
@@ -19,11 +18,12 @@ run:
   - -c
   - |
     set -euo pipefail
-    cd external-secrets-repo-gomod
-    # go mod tidy
-    # go install github.com/mikefarah/yq/v4@latest
+
+    # cd external-secrets-repo-gomod
+    # # go mod tidy
+    # # go install github.com/mikefarah/yq/v4@latest
     
-    # # Using recommended install method for golangci-lint
+    # Using recommended install method for golangci-lint
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin 
     golangci-lint --version
     

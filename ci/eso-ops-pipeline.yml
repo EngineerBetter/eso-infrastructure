@@ -40,6 +40,8 @@ jobs:
     passed: [set-pipeline]
     trigger: true
   - get: eso-infra-repo
+  - task: create-iso-image
+    file: eso-infra-repo/ci/tasks/create-eso-golang-image.yml
   - put: eso-golang-image
     params:
       build: eso-infra-repo/ci/tasks/eso-golang-dockerfile
