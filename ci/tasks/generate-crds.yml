@@ -20,4 +20,4 @@ run:
   - |
     set -euo pipefail
     cd external-secrets-trunk
-git a    make helm.generate
+    make helm.generate
