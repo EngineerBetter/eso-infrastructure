@@ -25,7 +25,7 @@ resources:
     uri: https://github.com/EngineerBetter/eso-infrastructure.git
     branch: master
 
-- name: external-secrets-repo
+- name: external-secrets-trunk
   type: git
   icon: github
   check_every: 15m
@@ -34,7 +34,7 @@ resources:
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
-- name: external-secrets-main-repo
+- name: external-secrets-main
   type: git
   icon: github
   check_every: 15m
@@ -151,13 +151,12 @@ jobs:
   plan:
   - get: eso-infra-repo
     trigger: true
-  - get: external-secrets-main-repo
+  - get: external-secrets-main
     trigger: true
-  - get: external-secrets-repo
-  - task: merge-fastforward
-    file: eso-infra-repo/ci/tasks/merge-fastforward.yml
-  # - task: commit-and-push
-  #   file: eso-infra-repo/ci/tasks/commit-and-push.yml
+  - put: external-secrets-trunk
+    params:
+      repository: external-secrets-main
+      merge: true
 
 #----------------------------- cluster management ---------------------------------------
 
@@ -188,7 +187,7 @@ jobs:
 
 - name: lint
   plan:
-  - get: external-secrets-repo
+  - get: external-secrets-trunk
     trigger: true
   - get: eso-infra-repo
     passed: [set-pipeline]
@@ -197,7 +196,7 @@ jobs:
 
 - name: unit-tests
   plan:
-  - get: external-secrets-repo
+  - get: external-secrets-trunk
     trigger: true
     passed: [lint]
   - get: eso-infra-repo
@@ -210,7 +209,7 @@ jobs:
   plan:
   - get: eso-infra-repo
     passed: [unit-tests]
-  - get: external-secrets-repo
+  - get: external-secrets-trunk
     trigger: true
     passed: [unit-tests]
   - get: eso-docker-tag
@@ -219,7 +218,7 @@ jobs:
     file: eso-infra-repo/ci/tasks/build-binary.yml
   - put: eso-binary-image
     params:
-      build: external-secrets-repo
+      build: external-secrets-trunk
       build_args:
         TARGETOS: linux
         TARGETARCH: amd64
@@ -235,10 +234,10 @@ jobs:
     passed: [build]
   - get: eso-infra-repo
     passed: [build]
-  - get: morning-trigger
+  - get: terraform-gke
     passed: [spin-gke-cluster]
     trigger: true
-  - get: external-secrets-repo
+  - get: external-secrets-trunk
     trigger: true
     passed: [build]
   - task: generate-crds
@@ -247,7 +246,7 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/eso
       vars:
-        helm_charts_dir: ../../../external-secrets-repo/deploy/charts/external-secrets
+        helm_charts_dir: ../../../external-secrets-trunk/deploy/charts/external-secrets
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-binary-image
         version_file: ../../../eso-docker-tag/version
   
@@ -255,7 +254,7 @@ jobs:
   plan:
   - get: eso-infra-repo
     passed: [deploy]
-  - get: external-secrets-repo
+  - get: external-secrets-trunk
     passed: [deploy]
     trigger: true
   - task: run-validation-tests
