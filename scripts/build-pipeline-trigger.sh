@@ -10,7 +10,7 @@ JOBS="set-pipeline lint unit-tests build deploy validation-tests"
 PIPELINE="eso-cd"
 
 Echo "Executing fly trigger job for target $TARGET and pipeline $PIPELINE"
-fly -t $TARGET check-resource --team=$TEAM -r $PIPELINE/external-secrets-repo
+fly -t $TARGET check-resource --team=$TEAM -r $PIPELINE/external-secrets-trunk
 
 for JOB in $JOBS; do
   fly -t $TARGET trigger-job --team=$TEAM -j $PIPELINE/$JOB -w

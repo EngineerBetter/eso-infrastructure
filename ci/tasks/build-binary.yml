@@ -7,10 +7,10 @@ image_resource:
     tag: 1.17.9-bullseye
 
 inputs:
-- name: external-secrets-repo
+- name: external-secrets-trunk
 
 outputs:
-- name: external-secrets-repo
+- name: external-secrets-trunk
 
 run:
   path: bash
@@ -18,6 +18,6 @@ run:
   - -c
   - |
     set -euo pipefail
-    cd external-secrets-repo
+    cd external-secrets-trunk
     go install github.com/mikefarah/yq/v4@latest
     make build-amd64

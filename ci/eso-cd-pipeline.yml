@@ -34,6 +34,11 @@ resources:
   source:
     uri: https://github.com/external-secrets/external-secrets
     username: EngineerBetterCI
+    git_config:
+    - name: user.name
+      value: "Conch Horse (EngineerBetterCI)"
+    - name: user.email
+      value: "systems@engineerbetter.com"
     password: ((ebci_eso_github_token))
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
