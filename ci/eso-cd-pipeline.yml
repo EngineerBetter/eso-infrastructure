@@ -147,17 +147,6 @@ jobs:
     params:
       terraform_source: eso-infra-repo/terraform/project
 
-- name: bump-from-main
-  plan:
-  - get: eso-infra-repo
-    trigger: true
-  - get: external-secrets-main
-    trigger: true
-  - put: external-secrets-trunk
-    params:
-      repository: external-secrets-main
-      merge: true
-
 #----------------------------- cluster management ---------------------------------------
 
 - name: spin-gke-cluster
@@ -184,6 +173,17 @@ jobs:
       action: destroy
 
 #---------------------------------- code part -------------------------------------------
+
+- name: bump-from-main
+  plan:
+  - get: eso-infra-repo
+    trigger: true
+  - get: external-secrets-main
+    trigger: true
+  - put: external-secrets-trunk
+    params:
+      repository: external-secrets-main
+      merge: true
 
 - name: lint
   plan:
