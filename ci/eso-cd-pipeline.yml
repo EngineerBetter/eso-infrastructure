@@ -20,24 +20,28 @@ resources:
 - name: eso-infra-repo
   type: git
   icon: github
-  check_every: 15m
+  check_every: 5m
   source:
     uri: https://github.com/EngineerBetter/eso-infrastructure.git
+    username: EngineerBetterCI
+    password: ((ebci_eso_github_token))
     branch: master
 
 - name: external-secrets-trunk
   type: git
   icon: github
-  check_every: 15m
+  check_every: 5m
   source:
     uri: https://github.com/external-secrets/external-secrets
+    username: EngineerBetterCI
+    password: ((ebci_eso_github_token))
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
 - name: external-secrets-main
   type: git
   icon: github
-  check_every: 15m
+  check_every: 1h
   source:
     uri: https://github.com/external-secrets/external-secrets
     branch: main
