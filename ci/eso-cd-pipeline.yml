@@ -74,7 +74,7 @@ resources:
   icon: clock-outline
   source:
     start: 9:00 AM
-    stop: 6:55 PM
+    stop: 9:30 AM
     location: Europe/London
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
@@ -83,7 +83,7 @@ resources:
   icon: clock-outline
   source:
     start: 7:00 PM
-    stop: 7:55 AM
+    stop: 7:30 PM
     location: Europe/London
     days: [Monday, Tuesday, Wednesday, Thursday, Friday]
 
