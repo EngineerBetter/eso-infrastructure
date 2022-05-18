@@ -73,7 +73,7 @@ jobs:
       tag_as_latest: true
     get_params: {skip_download: true}
 
-- name: merge-beach-with-main
+- name: merge-main-into-beach
   plan:
   - get: eso-infra-repo
     passed: [set-pipeline]
