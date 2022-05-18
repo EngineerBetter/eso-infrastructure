@@ -17,6 +17,29 @@ resources:
     branch: main
     paths: [go.mod]
 
+- name: external-secrets-main
+  type: git
+  icon: github
+  check_every: 1h
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    branch: main
+
+- name: external-secrets-trunk
+  type: git
+  icon: github
+  check_every: 5m
+  source:
+    uri: https://github.com/external-secrets/external-secrets
+    username: EngineerBetterCI
+    git_config:
+    - name: user.name
+      value: "Conch Horse (EngineerBetterCI)"
+    - name: user.email
+      value: "systems@engineerbetter.com"
+    password: ((ebci_eso_github_token))
+    branch: beach-team     
+
 - name: eso-ops-image
   type: docker-image
   source:
@@ -32,7 +55,6 @@ jobs:
     trigger: true
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-ops-pipeline.yml
-
 
 - name: create-eso-ops-image
   plan:
@@ -50,3 +72,14 @@ jobs:
       tag_file: external-secrets-repo-gomod/.git/ref
       tag_as_latest: true
     get_params: {skip_download: true}
+
+- name: merge-beach-with-main
+  plan:
+  - get: eso-infra-repo
+    passed: [set-pipeline]
+  - get: external-secrets-main
+    trigger: true
+  - put: external-secrets-trunk
+    params:
+      repository: external-secrets-main
+      merge: true

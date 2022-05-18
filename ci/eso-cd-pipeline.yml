@@ -34,23 +34,10 @@ resources:
   source:
     uri: https://github.com/external-secrets/external-secrets
     username: EngineerBetterCI
-    git_config:
-    - name: user.name
-      value: "Conch Horse (EngineerBetterCI)"
-    - name: user.email
-      value: "systems@engineerbetter.com"
     password: ((ebci_eso_github_token))
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
-- name: external-secrets-main
-  type: git
-  icon: github
-  check_every: 1h
-  source:
-    uri: https://github.com/external-secrets/external-secrets
-    branch: main
-    
 - name: terraform-project
   type: terraform
   icon: terraform
@@ -183,17 +170,6 @@ jobs:
       action: destroy
 
 #---------------------------------- code part -------------------------------------------
-
-- name: bump-from-main
-  plan:
-  - get: eso-infra-repo
-    trigger: true
-  - get: external-secrets-main
-    trigger: true
-  - put: external-secrets-trunk
-    params:
-      repository: external-secrets-main
-      merge: true
 
 - name: lint
   plan:
