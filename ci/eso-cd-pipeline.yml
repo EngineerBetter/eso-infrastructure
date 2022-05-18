@@ -115,7 +115,6 @@ groups:
   - build
   - deploy
   - validation-tests
-  - bump-from-main
 
 - name: cluster-management
   jobs:
