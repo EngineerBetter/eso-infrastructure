@@ -31,14 +31,20 @@ helm upgrade --install --set ${IMAGE_REPO},${WEBHOOK_REPO},${CONTROLLER_REPO} \
 }
 
 function build-amd {
-( cd ~/workspace/external-secrets
-TARGETOS=linux TARGETARCH=amd64 docker build -t $REPO:$TAG . )
+ ( 
+  cd ~/workspace/external-secrets
+  make build-amd64
+  TARGETOS=linux TARGETARCH=amd64 docker build -t $REPO:$TAG . 
+ )
 
 }
 
 function build-arm {
-( cd ~/workspace/external-secrets
-TARGETOS=linux TARGETARCH=arm64 docker build -t $REPO:$TAG . )
+ (
+  cd ~/workspace/external-secrets
+  make build-arm64
+  TARGETOS=linux TARGETARCH=arm64 docker build -t $REPO:$TAG . 
+  )
 }
 
 function helmgen {
