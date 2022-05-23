@@ -38,14 +38,6 @@ resources:
     #TODO: parametrize to be utilised by multiple ESO teams
     branch: beach-team 
 
-- name: terraform-project
-  type: terraform
-  icon: terraform
-  source:
-    <<: *terraform-common
-    backend_config:
-      bucket: terraform-state-eso
-      prefix: terraform/state/project
 
 - name: terraform-gke
   type: terraform
@@ -124,7 +116,6 @@ groups:
 - name: setup
   jobs:
   - set-pipeline
-  - setup-project
 
 jobs:
 - name: set-pipeline
@@ -133,15 +124,6 @@ jobs:
     trigger: true
   - set_pipeline: self
     file: eso-infra-repo/ci/eso-cd-pipeline.yml
-
-- name: setup-project
-  plan:
-  - get: eso-infra-repo
-    trigger: true
-    passed: [set-pipeline]
-  - put: terraform-project
-    params:
-      terraform_source: eso-infra-repo/terraform/project
 
 #----------------------------- cluster management ---------------------------------------
 
