@@ -45,7 +45,7 @@ run:
     kubectl get secretstore validate-secret-store-capabilities |grep ReadOnly
     set +x
     
-    echo -e "\n>> TEST[3/3] SecretSink Validating STATUS:NotImplemented"
+    echo -e "\n>> TEST[3/3] SecretSink Validating STATUS:SecretSyncFailed"
     set -x
-    kubectl get secretsink validate-secret-sink-status |grep NotImplemented
+    kubectl get secretsink validate-secret-sink-status |grep SecretSyncFailed
     set +x
