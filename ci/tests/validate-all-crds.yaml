@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-example
+data:
+  foobar: c2VjcmV0
+---
+apiVersion: external-secrets.io/v1alpha1
+kind: SecretSink
+metadata:
+  name: secret-sink-example
+  namespace: default # Same of the SecretStores
+spec:
+  secretStoreRefs:
+  - name: secretstore-sample
+    kind: SecretStore
+  selector:
+    secret:
+      name: foobar
+  data:
+  - match:
+     - secretKey: foobar
+       remoteRefs:
+       - remoteKey: /foo/bar
+---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: secretstore-sample
+spec:
+  provider:
+    fake:
+      data: []
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: external-secret-example
+  namespace: default
+spec:
+  refreshInterval: 1m
+  secretStoreRef:
+    name: secretstore-sample
+    kind: SecretStore
+  data:
+    - secretKey: new-key
+      remoteRef: 
+        key: /foo/bar
