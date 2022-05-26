@@ -31,7 +31,7 @@ run:
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
     echo "kubectl context: $(kubectl config current-context)"
     
-    echo -e "\n>> TEST[1/3] external-secrets-operator manifests"
+    echo -e "\n>> TEST[1/5] applying manifests"
 
     YAML_TEST_FILE=$(ls eso-infra-repo/ci/tests/*.yaml);
     for TEST in $YAML_TEST_FILE; do
@@ -40,12 +40,22 @@ run:
        echo
     done
 
-    echo -e "\n>> TEST[2/3] SecretStore Validating CAPABILITES:ReadOnly"
+    echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadOnly"
     set -x
-    kubectl get secretstore validate-secret-store-capabilities |grep ReadOnly
+    kubectl get secretstore secretstore-sample |grep ReadOnly
     set +x
     
-    echo -e "\n>> TEST[3/3] SecretSink Validating STATUS:SecretSyncFailed"
+    echo -e "\n>> TEST[3/5] SecretSink Validating STATUS:SecretSyncFailed"
     set -x
-    kubectl get secretsink validate-secret-sink-status |grep SecretSyncFailed
+    kubectl get secretsink secret-sink-example |grep SecretSyncFailed
+    set +x
+
+    echo -e "\n>> TEST[4/5] ExternalSecret Validating STATUS:SecretSynced"
+    set -x
+    kubectl get externalsecret external-secret-example |grep SecretSynced
+    set +x
+
+    echo -e "\n>> TEST[5/5] Secret Validating DATA:1"
+    set -x
+    kubectl get secret secret-example |grep 1
     set +x
