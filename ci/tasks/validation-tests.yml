@@ -32,7 +32,8 @@ run:
     echo "kubectl context: $(kubectl config current-context)"
     
     echo -e "\n>> TEST[1/5] applying manifest"
-
+    echo "Cleaning up cluster resources (force new updates)"
+    kubectl delete -f eso-infra-repo/ci/tests
     YAML_TEST_FILE=$(ls eso-infra-repo/ci/tests/*.yaml);
     for TEST in $YAML_TEST_FILE; do
        echo "Applying kubectl for $TEST"
@@ -55,7 +56,7 @@ run:
     kubectl get externalsecret external-secret-example |grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[5/5] Secret Validating DATA:1"
+    echo -e "\n>> TEST[5/5] New Secret has the same value as original Secret"
     set -x
-    kubectl get secret secret-example |grep 1
+    kubectl get secret external-secret-example -o yaml | grep c2VjcmV0
     set +x
