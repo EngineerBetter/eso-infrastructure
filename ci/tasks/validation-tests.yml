@@ -33,8 +33,12 @@ run:
     
     echo -e "\n>> TEST[1/5] applying manifest"
 
-    echo "Applying kubectl for validate-all-crds.yaml"
-    kubectl apply -f ci/tests/validate-all-crds.yaml
+    YAML_TEST_FILE=$(ls eso-infra-repo/ci/tests/*.yaml);
+    for TEST in $YAML_TEST_FILE; do
+       echo "Applying kubectl for $TEST"
+       kubectl apply -f $TEST
+       echo
+    done
 
     echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadOnly"
     set -x
