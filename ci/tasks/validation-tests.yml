@@ -34,7 +34,7 @@ run:
     echo -e "\n>> TEST[1/5] applying manifest"
 
     echo "Applying kubectl for validate-all-crds.yaml"
-    kubectl apply -f ../tests/validate-all-crds.yaml
+    kubectl apply -f ci/tests/validate-all-crds.yaml
 
     echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadOnly"
     set -x
