@@ -42,12 +42,12 @@ run:
 
     echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadOnly"
     set -x
-    kubectl get secretstore secretstore-sample |grep ReadOnly
+    kubectl get secretstore secretstore-example |grep ReadOnly
     set +x
     
-    echo -e "\n>> TEST[3/5] SecretSink Validating STATUS:SecretSyncFailed"
+    echo -e "\n>> TEST[3/5] SecretSink Validating STATUS:SecretSynced"
     set -x
-    kubectl get secretsink secret-sink-example |grep SecretSyncFailed
+    kubectl get secretsink secretsink-example |grep SecretSynced
     set +x
 
     echo -e "\n>> TEST[4/5] ExternalSecret Validating STATUS:SecretSynced"
