@@ -40,9 +40,9 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/secretsink-example.yaml
     kubectl apply -f eso-infra-repo/ci/tests/external-secret-example.yaml
 
-    echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadOnly"
+    echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadWrite"
     set -x
-    kubectl get secretstore secretstore-example |grep ReadOnly
+    kubectl get secretstore secretstore-example |grep ReadWrite
     set +x
     
     echo -e "\n>> TEST[3/5] SecretSink Validating STATUS:SecretSynced"
