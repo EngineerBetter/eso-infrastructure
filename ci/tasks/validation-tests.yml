@@ -6,7 +6,7 @@ image_resource:
     repository: engineerbetter/pcf-ops
     tag: latest
 
-params:    
+params:
   GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
   GOOGLE_APPLICATION_CREDENTIALS: creds.json
 
@@ -30,24 +30,24 @@ run:
            --zone=europe-west2-a --project=kubernetes-cluster-eso
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
     echo "kubectl context: $(kubectl config current-context)"
-    
+
     echo -e "\n>> TEST[1/5] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
-    kubectl delete -f eso-infra-repo/ci/tests
+    kubectl delete -f ci/tests
     # Changing apply to respect an order
-    kubectl apply -f eso-infra-repo/ci/tests/secret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/secretstore-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/secretsink-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/external-secret-example.yaml
+    kubectl apply -f ci/tests/secret-example.yaml
+    kubectl apply -f ci/tests/secretstore-example.yaml
+    kubectl apply -f ci/tests/pushsecret-example.yaml
+    kubectl apply -f ci/tests/external-secret-example.yaml
 
     echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore secretstore-example |grep ReadWrite
     set +x
-    
-    echo -e "\n>> TEST[3/5] SecretSink Validating STATUS:SecretSynced"
+
+    echo -e "\n>> TEST[3/5] PushSecret Validating STATUS:SecretSynced"
     set -x
-    kubectl get secretsink secretsink-example |grep SecretSynced
+    kubectl get pushsecret pushsecret-example |grep SecretSynced
     set +x
 
     echo -e "\n>> TEST[4/5] ExternalSecret Validating STATUS:SecretSynced"

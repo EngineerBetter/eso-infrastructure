@@ -26,15 +26,15 @@ helm uninstall -n external-secrets external-secrets &> /dev/null ||true
 
 helm upgrade --install --set ${IMAGE_REPO},${WEBHOOK_REPO},${CONTROLLER_REPO} \
  -n external-secrets --create-namespace \
- external-secrets deploy/charts/external-secrets 
+ external-secrets deploy/charts/external-secrets
 )
 }
 
 function build-amd {
- ( 
+ (
   cd ~/workspace/external-secrets
   make build-amd64
-  TARGETOS=linux TARGETARCH=amd64 docker build -t $REPO:$TAG . 
+  TARGETOS=linux TARGETARCH=amd64 docker build -t $REPO:$TAG .
  )
 
 }
@@ -43,14 +43,14 @@ function build-arm {
  (
   cd ~/workspace/external-secrets
   make build-arm64
-  TARGETOS=linux TARGETARCH=arm64 docker build -t $REPO:$TAG . 
+  TARGETOS=linux TARGETARCH=arm64 docker build -t $REPO:$TAG .
   )
 }
 
 function helmgen {
 ( cd ~/workspace/external-secrets
  make helm.generate )
-}	
+}
 
 case $OPT in
 
@@ -63,9 +63,9 @@ case $OPT in
   "build-arm")
     build-arm
     ;;
-  "helmgen")  
+  "helmgen")
     helmgen
-    ;;    
+    ;;
   *)
     echo "Usage: helmgen | build-amd | build-arm | deploy"
     exit 1
