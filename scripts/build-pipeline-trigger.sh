@@ -9,7 +9,7 @@ JOBS="set-pipeline lint unit-tests build deploy validation-tests"
 #TODO: detect from ../workspace/external-secrets branch
 PIPELINE="eso-cd"
 
-Echo "Executing fly trigger job for target $TARGET and pipeline $PIPELINE"
+echo "Executing fly trigger job for target $TARGET and pipeline $PIPELINE"
 fly -t $TARGET check-resource --team=$TEAM -r $PIPELINE/external-secrets-trunk
 
 for JOB in $JOBS; do
