@@ -33,12 +33,12 @@ run:
 
     echo -e "\n>> TEST[1/5] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
-    kubectl delete -f ci/tests
+    kubectl delete -f eso-infra-repo/ci/tests || echo "No manifests found"
     # Changing apply to respect an order
-    kubectl apply -f ci/tests/secret-example.yaml
-    kubectl apply -f ci/tests/secretstore-example.yaml
-    kubectl apply -f ci/tests/pushsecret-example.yaml
-    kubectl apply -f ci/tests/external-secret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/secret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/secretstore-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/pushsecret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/external-secret-example.yaml
 
     echo -e "\n>> TEST[2/5] SecretStore Validating CAPABILITES:ReadWrite"
     set -x
