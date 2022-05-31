@@ -20,3 +20,7 @@ provider "helm" {
     )
   }
 }
+resource "google_service_account" "service_account_eso" {
+  account_id   = "eso-credentials"
+  display_name = "ESO Service Account"
+}
