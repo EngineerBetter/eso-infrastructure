@@ -225,6 +225,8 @@ jobs:
   - get: external-secrets-trunk
     passed: [deploy]
     trigger: true
+  - task: create-gcp-secrets
+    file: eso-infra-repo/ci/tasks/create-gcp-secrets.yml
   - task: run-validation-tests
     file: eso-infra-repo/ci/tasks/validation-tests.yml
 
