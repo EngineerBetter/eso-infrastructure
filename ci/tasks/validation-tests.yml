@@ -29,6 +29,7 @@ run:
     gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
+    gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secrets found"
     echo "kubectl context: $(kubectl config current-context)"
 
     echo -e "\n>> TEST[1/5] applying manifest"
