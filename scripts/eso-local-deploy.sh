@@ -8,15 +8,18 @@ GITBRANCH="beach-team"
 REPO="external-secrets"
 TAG="$GITBRANCH"
 
-ESO_PATH=${ESO_PATH:-"$HOME/workspace/external-secrets"}
-
-echo "Using ESO_PATH $ESO_PATH"
+# Asking the user to enter the absolute path for the external-secrets directory
+echo "Kindly enter the absolute path of the external-secrets directory"   
+read ESO_PATH
+BBLUE='\033[1;34m' #BoldBlue
+NC='\033[0m' # No Color
+echo -e "Your local absolute path for external-secrets, ESO_PATH is: $BBLUE$ESO_PATH$NC"
 
 IMAGE_REPO="image.repository=$REPO,image.tag=$TAG"
 WEBHOOK_REPO="webhook.image.repository=$REPO,webhook.image.tag=$TAG"
 CONTROLLER_REPO="certController.image.repository=$REPO,certController.image.tag=$TAG"
 
-echo "Ensure build and deploy is bound to $GITBRANCH branch"
+echo -e "Ensure build and deploy is bound to $BBLUE$GITBRANCH$NC branch"
 (
   cd "$ESO_PATH"
   git checkout $GITBRANCH
