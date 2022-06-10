@@ -63,5 +63,5 @@ run:
 
     echo -e "\n>> TEST[6/6] Kubectl describe shows events"
     set -x
-    kubectl describe pushsecret | grep push-secret
+    kubectl describe pushsecret | grep pushsecret
     set +x
