@@ -153,11 +153,13 @@ jobs:
 
 - name: deploy-vault
   plan:
-  - get: eso-infra-repo
-    passed: [spin-gke-cluster]
-    trigger: true
-  - get: morning-trigger
-    trigger: true
+  - in_parallel:
+    - get: eso-infra-repo
+      passed: [spin-gke-cluster]
+      trigger: true
+    - get: morning-trigger
+      passed: [spin-gke-cluster]
+      trigger: true
 #---------------------------------- code part -------------------------------------------
 
 - name: lint
