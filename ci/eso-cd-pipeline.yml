@@ -113,6 +113,7 @@ groups:
   - spin-gke-cluster
   - destroy-gke-cluster
   - deploy-vault
+  - destroy-vault 
   
 - name: setup
   jobs:
@@ -153,11 +154,21 @@ jobs:
 
 - name: deploy-vault
   plan:
-  - get: eso-infra-repo
-    passed: [spin-gke-cluster]
-    trigger: true
-  - get: morning-trigger
-    trigger: true
+  - in_parallel:
+    - get: eso-infra-repo
+      passed: [spin-gke-cluster]
+      trigger: true
+    - get: morning-trigger
+      passed: [spin-gke-cluster]
+      trigger: true
+
+- name: destroy-vault
+  plan:
+  - in_parallel:
+    - get: eso-infra-repo
+      trigger: true
+    - get: evening-trigger
+      trigger: true
 #---------------------------------- code part -------------------------------------------
 
 - name: lint
