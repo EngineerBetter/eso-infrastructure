@@ -36,13 +36,13 @@ resources:
     username: EngineerBetterCI
     password: ((ebci_eso_github_token))
     #TODO: parametrize to be utilised by multiple ESO teams
-    branch: beach-team 
+    branch: beach-team
 
 
 - name: terraform-gke
   type: terraform
   icon: terraform
-  source: 
+  source:
     <<: *terraform-common
     backend_config:
       bucket: terraform-state-eso
@@ -113,8 +113,8 @@ groups:
   - spin-gke-cluster
   - destroy-gke-cluster
   - deploy-vault
-  - destroy-vault 
-  
+  - destroy-vault
+
 - name: setup
   jobs:
   - set-pipeline
@@ -158,7 +158,6 @@ jobs:
   - in_parallel:
     - get: eso-infra-repo
       passed: [spin-gke-cluster]
-      trigger: true
     - get: morning-trigger
       passed: [spin-gke-cluster]
       trigger: true
@@ -167,7 +166,6 @@ jobs:
   plan:
   - in_parallel:
     - get: eso-infra-repo
-      trigger: true
     - get: evening-trigger
       trigger: true
 
@@ -238,7 +236,7 @@ jobs:
         helm_charts_dir: ../../../external-secrets-trunk/deploy/charts/external-secrets
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-binary-image
         version_file: ../../../eso-docker-tag/version
-  
+
 - name: validation-tests
   plan:
   - get: eso-infra-repo
