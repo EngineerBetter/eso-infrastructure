@@ -161,6 +161,9 @@ jobs:
     - get: morning-trigger
       passed: [spin-gke-cluster]
       trigger: true
+    - get: terraform-gke
+      passed: [spin-gke-cluster]
+      trigger: true
 
 - name: destroy-vault
   plan:
