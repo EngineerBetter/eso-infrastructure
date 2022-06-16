@@ -46,9 +46,9 @@ run:
     kubectl get secretstore secretstore-example |grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[3/6] PushSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[3/6] PushSecret Validating STATUS:Synced"
     set -x
-    kubectl get pushsecret pushsecret-example |grep SecretSynced
+    kubectl get pushsecret pushsecret-example |grep Synced
     set +x
 
     echo -e "\n>> TEST[4/6] ExternalSecret Validating STATUS:SecretSynced"
