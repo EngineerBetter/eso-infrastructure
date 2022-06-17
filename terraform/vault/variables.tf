@@ -12,3 +12,7 @@ variable "zone" {
   type = string
   default = "europe-west2-a"
 }
+
+variable "helm_charts_dir" {
+  type = string
+}

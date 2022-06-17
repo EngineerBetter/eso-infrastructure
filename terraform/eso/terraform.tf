@@ -6,7 +6,7 @@ terraform {
     }
   }
 
- 
+
    backend "gcs" {
     bucket  = "terraform-state-eso"
     prefix  = "terraform/state/eso"
