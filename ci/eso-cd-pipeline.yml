@@ -158,9 +158,6 @@ jobs:
   - in_parallel:
     - get: eso-infra-repo
       passed: [spin-gke-cluster]
-    - get: morning-trigger
-      passed: [spin-gke-cluster]
-      trigger: true
     - get: terraform-gke
       passed: [spin-gke-cluster]
       trigger: true
