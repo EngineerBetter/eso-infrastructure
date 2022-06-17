@@ -70,14 +70,7 @@ resources:
   type: terraform
   icon: terraform
   source:
-    backend_type: gcs
-    env_name: development
-    env:
-      GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
-    vars:
-      region: europe-west2
-      zone: europe-west2-a
-      project: kubernetes-cluster-eso
+    <<: *terraform-common
     backend_config:
       bucket: terraform-state-eso
       prefix: terraform/state/eso
