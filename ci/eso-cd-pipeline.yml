@@ -82,6 +82,15 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state/eso
 
+- name: terraform-vault
+  type: terraform
+  icon: terraform
+  source:
+    <<: *terraform-common
+    backend_config:
+      bucket: terraform-state-eso
+      prefix: terraform/state/vault
+
 - name: eso-binary-image
   type: docker-image
   source:
@@ -161,6 +170,9 @@ jobs:
     - get: terraform-gke
       passed: [spin-gke-cluster]
       trigger: true
+    - put: terraform-vault
+      params:
+        terraform_source: eso-infra-repo/terraform/vault
 
 - name: destroy-vault
   plan:
@@ -168,6 +180,12 @@ jobs:
     - get: eso-infra-repo
     - get: evening-trigger
       trigger: true
+    - put: terraform-vault
+      params:
+        terraform_source: eso-infra-repo/terraform/vault
+        action: destroy
+      get_params:
+        action: destroy
 
 #---------------------------------- code part -------------------------------------------
 
