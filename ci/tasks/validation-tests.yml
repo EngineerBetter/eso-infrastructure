@@ -34,18 +34,21 @@ run:
 
     echo -e "\n>> TEST[1/6] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
-    kubectl delete -f eso-infra-repo/ci/tests || echo "No manifests found"
+    kubectl delete -f eso-infra-repo/ci/tests/online || echo "No manifests found"
     # Changing apply to respect an order
-    kubectl apply -f eso-infra-repo/ci/tests/secret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/secretstore-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/pushsecret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/external-secret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/online/secret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/online/secretstore-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/online/pushsecret-example.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/online/external-secret-example.yaml
 
     echo -e "\n>> TEST[2/6] SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore secretstore-example |grep ReadWrite
     set +x
 
+    echo -e "Sleeping for 5 to ensure resource creation."
+    sleep 5
+    
     echo -e "\n>> TEST[3/6] PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret pushsecret-example |grep Synced
