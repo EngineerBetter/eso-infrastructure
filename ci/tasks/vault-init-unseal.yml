@@ -1,0 +1,35 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: engineerbetter/pcf-ops
+    tag: latest
+
+params:
+  GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+  GOOGLE_APPLICATION_CREDENTIALS: creds.json
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -euo pipefail
+    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+    echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
+    gcloud auth activate-service-account \
+        --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
+        --project 'kubernetes-cluster-eso'
+
+    gcloud container clusters get-credentials kubernetes-cluster-eso \
+           --zone=europe-west2-a --project=kubernetes-cluster-eso
+
+    echo "Initialising vault..."
+    kubectl -n vault-ns exec vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > cluster-keys.json
+    VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" cluster-keys.json)
+    echo "Unsealing vault..."
+    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+
+    rm ${GOOGLE_APPLICATION_CREDENTIALS}

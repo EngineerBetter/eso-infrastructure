@@ -115,6 +115,7 @@ groups:
   - spin-gke-cluster
   - destroy-gke-cluster
   - deploy-vault
+  - vault-init-unseal
   - destroy-vault
 
 - name: setup
@@ -168,6 +169,15 @@ jobs:
   - put: terraform-vault
     params:
       terraform_source: eso-infra-repo/terraform/vault
+
+- name: vault-init-unseal
+  plan:
+  - get: eso-infra-repo
+  - get: terraform-vault
+    passed: [deploy-vault]
+    trigger: true
+  - task: vault-init-unseal
+    file: eso-infra-repo/ci/tasks/vault-init-unseal.yml
 
 - name: destroy-vault
   plan:
