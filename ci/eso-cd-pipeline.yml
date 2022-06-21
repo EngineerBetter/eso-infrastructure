@@ -155,9 +155,8 @@ jobs:
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
-      action: destroy
-    get_params:
-      action: destroy
+      get_params:
+        action: destroy
 
 - name: deploy-vault
   plan:
