@@ -33,6 +33,6 @@ run:
     echo "Unsealing vault..."
     kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
     echo "Logging into vault..."
-    kubectl -n vault-ns exec vault-0 -- vault login $VAULT_ROOT_TOKEN
+    kubectl -n vault-ns exec vault-0 -- vault login $VAULT_ROOT_TOKEN > /dev/null 2>&1
 
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
