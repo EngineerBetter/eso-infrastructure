@@ -29,7 +29,10 @@ run:
     echo "Initialising vault..."
     kubectl -n vault-ns exec vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > cluster-keys.json
     VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" cluster-keys.json)
+    VAULT_ROOT_TOKEN=$(jq -r ".root_token" cluster-keys.json)
     echo "Unsealing vault..."
     kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+    echo "Logging into vault..."
+    kubectl -n vault-ns exec vault-0 -- vault login $VAULT_ROOT_TOKEN
 
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
