@@ -149,14 +149,15 @@ jobs:
   - get: evening-trigger
     trigger: true
     passed: [destroy-vault]
-  - get: terraform-vault
-    passed: [destroy-vault]
-    trigger: true
+  # - get: terraform-vault
+  #   passed: [destroy-vault]
+  #   trigger: true
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
-      get_params:
-        action: destroy
+      action: destroy
+    get_params:
+      action: destroy
 
 - name: deploy-vault
   plan:
