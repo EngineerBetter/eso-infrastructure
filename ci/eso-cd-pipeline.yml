@@ -109,14 +109,14 @@ groups:
   - build
   - deploy
   - validation-tests
+  - deploy-vault
+  - vault-setup
+  - destroy-vault
 
 - name: cluster-management
   jobs:
   - spin-gke-cluster
   - destroy-gke-cluster
-  - deploy-vault
-  - vault-init-unseal
-  - destroy-vault
 
 - name: setup
   jobs:
