@@ -1,0 +1,70 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: engineerbetter/pcf-ops
+    tag: latest
+
+params:
+  GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+  GOOGLE_APPLICATION_CREDENTIALS: creds.json
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -euo pipefail
+    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+    echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
+    gcloud auth activate-service-account \
+        --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
+        --project 'kubernetes-cluster-eso'
+
+    gcloud container clusters get-credentials kubernetes-cluster-eso \
+           --zone=europe-west2-a --project=kubernetes-cluster-eso
+
+    echo "Initialize Vault with one key share and one key threshold..."
+    kubectl -n vault-ns exec vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > cluster-keys.json
+
+    echo "Capture the Vault unseal key and root token..."
+    VAULT_ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
+    VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[]")
+
+    echo "Unseal vault..."
+    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+    
+    echo "Create k8s secret containing vault credentials..."
+    kubectl -n vault-ns create secret generic vault-credentials --from-literal=vault-root-token=$VAULT_ROOT_TOKEN --from-literal=vault-unseal-key=$VAULT_UNSEAL_KEY
+
+    echo "Log into vault..."
+    kubectl -n vault-ns exec vault-0 -- vault login $VAULT_ROOT_TOKEN > /dev/null 2>&1
+
+    echo "Enable kubernetes authentication method..."
+    kubectl -n vault-ns exec vault-0 -- vault auth enable kubernetes
+
+    echo "Configure the Kubernetes authentication method to use the location of the Kubernetes API..."
+    kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/config kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+
+    echo "Create eso-vault-sa service account to be used by the eso pods..."
+    kubectl -n external-secrets create sa eso-vault-sa
+
+    echo "Create vault policy that enables read and write capabilities for secrets at specific path..."
+    cat <<EOF > eso-vault-policy.hcl
+    path "secret/data/our/secret" {
+      capabilities = ["create", "read", "update", "list"]
+    }
+    EOF
+
+    kubectl -n vault-ns cp eso-vault-policy.hcl vault-0:/vault/file/eso-vault-policy.hcl
+
+    kubectl -n vault-ns exec vault-0 -- vault policy write eso-vault-policy /vault/file/eso-vault-policy.hcl
+
+    echo "Create a vault Kubernetes authentication role,that connects the Kubernetes service account and vault policy..."
+    kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/role/webapp bound_service_account_names=eso-vault-sa bound_service_account_namespaces=external-secrets policies=eso-vault-policy ttl=24h
+
+    echo "Clean the environment"
+    rm cluster-keys.json
+    rm ${GOOGLE_APPLICATION_CREDENTIALS}
