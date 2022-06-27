@@ -40,4 +40,11 @@ resource "helm_release" "external-secrets" {
     name  = "certController.image.pullPolicy"
     value = "Always"
   }
+    set {
+      name = "crds.createPushSecret"
+      value = "true"
+  }
+  values = [
+    "${file("values.yaml")}"
+  ]
 }
