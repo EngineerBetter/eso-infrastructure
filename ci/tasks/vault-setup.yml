@@ -26,15 +26,20 @@ run:
     gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
 
-    echo "Initialize Vault with one key share and one key threshold..."
-    kubectl -n vault-ns exec vault-0 -- vault operator init -key-shares=1 -key-threshold=1 -format=json > cluster-keys.json
+    echo "Initialize Vault with five key share and three key threshold..."
+    kubectl -n vault-ns exec vault-0 -- vault operator init -key-shares=5 -key-threshold=3 -format=json > cluster-keys.json
 
-    echo "Capture the Vault unseal key and root token..."
+    echo "Capture the root token..."
     VAULT_ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
-    VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[]")
 
-    echo "Unseal vault..."
-    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+    echo "Capture the vault unseal keys and unseal vault..."
+    COUNTER=0
+    until $COUNTER == 2
+    do
+      VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[$COUNTER]")
+      kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+      $COUNTER += 1
+    done
     
     echo "Create k8s secret containing vault credentials..."
     kubectl -n vault-ns create secret generic vault-credentials --from-literal=vault-root-token=$VAULT_ROOT_TOKEN --from-literal=vault-unseal-key=$VAULT_UNSEAL_KEY
