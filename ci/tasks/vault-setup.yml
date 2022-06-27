@@ -15,7 +15,7 @@ run:
   args:
   - -c
   - |
-    set -euo pipefail
+    set -eo pipefail
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
     echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
@@ -63,7 +63,7 @@ run:
     kubectl -n vault-ns exec vault-0 -- vault policy write eso-vault-policy /vault/file/eso-vault-policy.hcl
 
     echo "Create a vault Kubernetes authentication role,that connects the Kubernetes service account and vault policy..."
-    kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/role/webapp bound_service_account_names=eso-vault-sa bound_service_account_namespaces=external-secrets policies=eso-vault-policy ttl=24h
+    kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/role/eso bound_service_account_names=eso-vault-sa bound_service_account_namespaces=external-secrets policies=eso-vault-policy ttl=24h
 
     echo "Clean the environment"
     rm cluster-keys.json
