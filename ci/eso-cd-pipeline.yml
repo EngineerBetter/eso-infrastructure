@@ -75,14 +75,14 @@ resources:
       bucket: terraform-state-eso
       prefix: terraform/state/eso
 
-- name: terraform-vault
-  type: terraform
-  icon: terraform
-  source:
-    <<: *terraform-common
-    backend_config:
-      bucket: terraform-state-eso
-      prefix: terraform/state/vault
+# - name: terraform-vault
+#   type: terraform
+#   icon: terraform
+#   source:
+#     <<: *terraform-common
+#     backend_config:
+#       bucket: terraform-state-eso
+#       prefix: terraform/state/vault
 
 - name: eso-binary-image
   type: docker-image
@@ -107,11 +107,11 @@ groups:
   - lint
   - unit-tests
   - build
-  - deploy-eso
+  - deploy
   - validation-tests
-  - deploy-vault
-  - vault-setup
-  - destroy-vault
+  # - deploy-vault
+  # - vault-setup
+  # - destroy-vault
 
 - name: cluster-management
   jobs:
@@ -148,7 +148,7 @@ jobs:
     passed: [set-pipeline]
   - get: evening-trigger
     trigger: true
-    passed: [destroy-vault]
+  #  passed: [destroy-vault]
   # - get: terraform-vault
   #   passed: [destroy-vault]
   #   trigger: true
@@ -159,37 +159,37 @@ jobs:
     get_params:
       action: destroy
 
-- name: deploy-vault
-  plan:
-  - get: eso-infra-repo
-    passed: [spin-gke-cluster]
-  - get: terraform-eso
-    passed: [deploy-eso]
-    trigger: true
-  - put: terraform-vault
-    params:
-      terraform_source: eso-infra-repo/terraform/vault
+# - name: deploy-vault
+#   plan:
+#   - get: eso-infra-repo
+#     passed: [spin-gke-cluster]
+#   - get: terraform-eso
+#     passed: [deploy]
+#     trigger: true
+#   - put: terraform-vault
+#     params:
+#       terraform_source: eso-infra-repo/terraform/vault
 
-- name: vault-setup
-  plan:
-  - get: eso-infra-repo
-  - get: terraform-vault
-    passed: [deploy-vault]
-    trigger: true
-  - task: vault-setup
-    file: eso-infra-repo/ci/tasks/vault-setup.yml
+# - name: vault-setup
+#   plan:
+#   - get: eso-infra-repo
+#   - get: terraform-vault
+#     passed: [deploy-vault]
+#     trigger: true
+#   - task: vault-setup
+#     file: eso-infra-repo/ci/tasks/vault-setup.yml
 
-- name: destroy-vault
-  plan:
-  - get: eso-infra-repo
-  - get: evening-trigger
-    trigger: true
-  - put: terraform-vault
-    params:
-      terraform_source: eso-infra-repo/terraform/vault
-      action: destroy
-    get_params:
-      action: destroy
+# - name: destroy-vault
+#   plan:
+#   - get: eso-infra-repo
+#   - get: evening-trigger
+#     trigger: true
+#   - put: terraform-vault
+#     params:
+#       terraform_source: eso-infra-repo/terraform/vault
+#       action: destroy
+#     get_params:
+#       action: destroy
 
 #---------------------------------- code part -------------------------------------------
 
@@ -237,7 +237,7 @@ jobs:
   - put: eso-docker-tag
     params: {file: eso-docker-tag/version}
 
-- name: deploy-eso
+- name: deploy
   plan:
   - get: eso-docker-tag
     passed: [build]
@@ -262,9 +262,9 @@ jobs:
 - name: validation-tests
   plan:
   - get: eso-infra-repo
-    passed: [deploy-eso]
+    passed: [deploy]
   - get: external-secrets-trunk
-    passed: [deploy-eso]
+    passed: [deploy]
     trigger: true
   - task: create-gcp-secrets
     file: eso-infra-repo/ci/tasks/create-gcp-secrets.yml
