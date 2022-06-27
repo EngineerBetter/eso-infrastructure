@@ -34,11 +34,11 @@ run:
 
     echo "Capture the vault unseal keys and unseal vault..."
     COUNTER=0
-    until $COUNTER == 2
+    until [ $COUNTER -eq 2 ]
     do
       VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[$COUNTER]")
       kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
-      $COUNTER += 1
+      ((COUNTER++))
     done
     
     echo "Create k8s secret containing vault credentials..."
