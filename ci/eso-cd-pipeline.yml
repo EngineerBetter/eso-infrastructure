@@ -107,7 +107,7 @@ groups:
   - lint
   - unit-tests
   - build
-  - deploy-eso
+  - deploy
   - validation-tests
   - deploy-vault
   - vault-setup
@@ -164,7 +164,7 @@ jobs:
   - get: eso-infra-repo
     passed: [spin-gke-cluster]
   - get: terraform-eso
-    passed: [deploy-eso]
+    passed: [deploy]
     trigger: true
   - put: terraform-vault
     params:
@@ -237,7 +237,7 @@ jobs:
   - put: eso-docker-tag
     params: {file: eso-docker-tag/version}
 
-- name: deploy-eso
+- name: deploy
   plan:
   - get: eso-docker-tag
     passed: [build]
@@ -262,9 +262,9 @@ jobs:
 - name: validation-tests
   plan:
   - get: eso-infra-repo
-    passed: [deploy-eso]
+    passed: [deploy]
   - get: external-secrets-trunk
-    passed: [deploy-eso]
+    passed: [deploy]
     trigger: true
   - task: create-gcp-secrets
     file: eso-infra-repo/ci/tasks/create-gcp-secrets.yml
