@@ -33,15 +33,17 @@ run:
     VAULT_ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
 
     echo "Capture the vault unseal keys and unseal vault..."
-    VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
-    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
-    VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[1]")
-    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
-    VAULT_UNSEAL_KEY=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[2]")
-    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+    VAULT_UNSEAL_KEY_1=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
+    VAULT_UNSEAL_KEY_2=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[1]")
+    VAULT_UNSEAL_KEY_3=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[2]")
+
+    echo "Unsealing vault..."
+    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY_1
+    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY_2
+    kubectl -n vault-ns exec vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY_3
     
     echo "Create k8s secret containing vault credentials..."
-    kubectl -n vault-ns create secret generic vault-credentials --from-literal=vault-root-token=$VAULT_ROOT_TOKEN --from-literal=vault-unseal-key=$VAULT_UNSEAL_KEY
+    kubectl -n vault-ns create secret generic vault-credentials --from-literal=vault-root-token=$VAULT_ROOT_TOKEN --from-literal=vault-unseal-key-1=$VAULT_UNSEAL_KEY_1 --from-literal=vault-unseal-key-2=$VAULT_UNSEAL_KEY_2 --from-literal=vault-unseal-key-3=$VAULT_UNSEAL_KEY_3
 
     echo "Log into vault..."
     kubectl -n vault-ns exec vault-0 -- vault login $VAULT_ROOT_TOKEN > /dev/null 2>&1
