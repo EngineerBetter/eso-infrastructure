@@ -25,7 +25,7 @@ run:
 
     gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
-    echo "Check if vault is already initialized or not"
+    echo "Check if vault is already initialized or not..."
     is_init=`kubectl exec -it -n vault-ns vault-0 -- sh -c "vault status | grep Initialized | tr -s ' ' | cut -d ' ' -f2 | tr -d '\n'"`
     if [[ $is_init == "true" ]]
     then
