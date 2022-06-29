@@ -163,7 +163,7 @@ jobs:
   plan:
   - get: eso-infra-repo
     passed: [spin-gke-cluster]
-  - get: terraform-eso
+  - get: terraform-gke
     passed: [deploy]
     trigger: true
   - put: terraform-vault
