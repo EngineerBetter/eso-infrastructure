@@ -9,6 +9,7 @@ REPO="external-secrets"
 TAG="$GITBRANCH"
 
 ESO_PATH=${ESO_PATH:-"$HOME/workspace/external-secrets"}
+CURRENT_PATH=${CURRENT_PATH:-"$HOME/workspace/eso-infrastructure"}
 
 echo "Using ESO_PATH $ESO_PATH"
 
@@ -31,7 +32,9 @@ function deploy {
 
     helm upgrade --install --set ${IMAGE_REPO},${WEBHOOK_REPO},${CONTROLLER_REPO} \
       -n external-secrets --create-namespace \
-      external-secrets deploy/charts/external-secrets
+      -f $CURRENT_PATH/terraform/eso/values.yaml \
+      --set crds.createPushSecret=true \
+      external-secrets deploy/charts/external-secrets 
   )
 }
 
