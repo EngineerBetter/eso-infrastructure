@@ -32,47 +32,48 @@ run:
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secrets found"
     echo "kubectl context: $(kubectl config current-context)"
 
-    echo -e "\n>> TEST[1/7] applying manifest"
+    echo -e "\n>> TEST[1/8] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
     kubectl delete -f eso-infra-repo/ci/tests/online || echo "No manifests found"
     # Changing apply to respect an order
-    kubectl apply -f eso-infra-repo/ci/tests/online/secret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/secretstore-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/pushsecret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/external-secret-example.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/vault-secretstore.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/vault-secret.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/online/vault-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-external-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
 
-    echo -e "\n>> TEST[2/7] SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[2/8] SecretStore Validating CAPABILITES:ReadWrite"
     set -x
-    kubectl get secretstore secretstore-example |grep ReadWrite
+    kubectl get secretstore secretstore-example | grep ReadWrite
     set +x
 
     echo -e "Sleeping for 5 to ensure resource creation."
     sleep 5
     
-    echo -e "\n>> TEST[3/7] PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[3/8] PushSecret Validating STATUS:Synced"
     set -x
-    kubectl get pushsecret pushsecret-example |grep Synced
+    kubectl get pushsecret pushsecret-example | grep Synced
     set +x
 
-    echo -e "\n>> TEST[4/7] ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[4/8] ExternalSecret Validating STATUS:SecretSynced"
     set -x
-    kubectl get externalsecret external-secret-example |grep SecretSynced
+    kubectl get externalsecret external-secret-example | grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[5/7] New Secret has the same value as original Secret"
+    echo -e "\n>> TEST[5/8] New Secret has the same value as original Secret"
     set -x
     kubectl get secret external-secret-example -o yaml | grep c2VjcmV0
     set +x
 
-    echo -e "\n>> TEST[6/7] Kubectl describe shows events"
+    echo -e "\n>> TEST[6/8] Kubectl describe shows events"
     set -x
     kubectl describe pushsecret | grep pushsecret
     set +x
 
-    echo -e "\n>> TEST[7/7] Kubectl describe shows vault secret"
+    echo -e "\n>> TEST[7/8] Kubectl describe shows vault secret"
     set -x
     kubectl describe pushsecret vault-pushsecret | grep Synced
     set +x
