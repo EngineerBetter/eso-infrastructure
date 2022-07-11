@@ -29,15 +29,16 @@ else
     # Create the eso namespace
     # kubectl create ns external-secrets -- Namespace should already exist on GKE assuming a successful ESO deploy
     # Create eso-vault-sa service account to be used by the eso pods
-    kubectl -n external-secrets create sa eso-vault-sa
+    kubectl -n default create sa eso-vault-sa
     # Create vault policy that enables read and write capabilities for secrets at specific path
     cat << EOF > eso-vault-policy.hcl
-    path "secret/data/our/secret" {
+    path "secret/*" { 
       capabilities = ["create", "read", "update", "list"]
     }
 EOF
     kubectl cp eso-vault-policy.hcl vault-0:/vault/file/eso-vault-policy.hcl
     kubectl exec vault-0 -- vault policy write eso-vault-policy /vault/file/eso-vault-policy.hcl
     ## Create a vault Kubernetes authentication role,that connects the Kubernetes service account and vault policy
-    kubectl exec vault-0 -- vault write auth/kubernetes/role/eso-role bound_service_account_names=eso-vault-sa bound_service_account_namespaces=external-secrets policies=eso-vault-policy ttl=24h
+    kubectl exec vault-0 -- vault write auth/kubernetes/role/eso-role bound_service_account_names=eso-vault-sa bound_service_account_namespaces=default policies=eso-vault-policy ttl=24h
+    kubectl exec vault-0 -- vault secrets enable -version=2 kv -path=secret
 fi
