@@ -7,9 +7,9 @@ then
     echo "Exit Setup job.."
     exit 0
 else
-    # Initialize Vault with one key share and one key threshold
+    # Initialize Vault with five key shares and three key threshold
     kubectl exec vault-0 -- vault operator init -format=json > cluster-keys.json
-    # Capture the Vault unseal key and root token
+    # Capture the Vault unseal keys and root token
     VAULT_ROOT_TOKEN=$(cat cluster-keys.json | jq -r ".root_token")
     VAULT_UNSEAL_KEY_1=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[0]")
     VAULT_UNSEAL_KEY_2=$(cat cluster-keys.json | jq -r ".unseal_keys_b64[1]")
@@ -27,7 +27,7 @@ else
     # Configure the Kubernetes authentication method to use the location of the Kubernetes API
     kubectl exec vault-0 -- vault write auth/kubernetes/config kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
     # Create the eso namespace
-    kubectl create ns external-secrets
+    # kubectl create ns external-secrets -- Namespace should already exist on GKE assuming a successful ESO deploy
     # Create eso-vault-sa service account to be used by the eso pods
     kubectl -n external-secrets create sa eso-vault-sa
     # Create vault policy that enables read and write capabilities for secrets at specific path
