@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# NOTE: THIS SCRIPT IS NOT RAN IN CONCOURSE!!! THE TASK VAULT-SETUP IS!
+
 # Check if vault is already initialized or not
 is_init=`kubectl exec -it vault-0 -- sh -c "vault status | grep Initialized | tr -s ' ' | cut -d ' ' -f2 | tr -d '\n'"`
 if [[ $is_init == "true" ]]
