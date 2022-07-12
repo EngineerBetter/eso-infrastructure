@@ -92,8 +92,3 @@ run:
     set -x
     kubectl get secret vault-external-secret -o yaml | grep world
     set +x
-
-    # echo -e "\n>> TEST[10/10] Remote secret on vault has the same value as the original local one" Perform this es respurce ^^
-    # set -x
-    # kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep world
-    # set +x
