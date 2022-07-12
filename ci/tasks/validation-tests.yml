@@ -32,7 +32,7 @@ run:
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secrets found"
     echo "kubectl context: $(kubectl config current-context)"
 
-    echo -e "\n>> TEST[1/8] applying manifest"
+    echo -e "\n>> TEST[1/10] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
     kubectl delete -f eso-infra-repo/ci/tests/online || echo "No manifests found"
     # Changing apply to respect an order
@@ -45,40 +45,55 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
 
-    echo -e "\n>> TEST[2/8] SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[2/10] GCP SecretStore Validating CAPABILITES:ReadWrite"
     set -x
-    kubectl get secretstore secretstore-example | grep ReadWrite
+    kubectl get secretstore gcp-secretstore | grep ReadWrite
     set +x
 
     echo -e "Sleeping for 5 to ensure resource creation."
     sleep 5
     
-    echo -e "\n>> TEST[3/8] PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[3/10] GCP PushSecret Validating STATUS:Synced"
     set -x
-    kubectl get pushsecret pushsecret-example | grep Synced
+    kubectl get pushsecret gcp-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[4/8] ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[4/10] GCP ExternalSecret Validating STATUS:SecretSynced"
     set -x
-    kubectl get externalsecret external-secret-example | grep SecretSynced
+    kubectl get externalsecret gcp-external-secret | grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[5/8] New Secret has the same value as original Secret"
+    echo -e "\n>> TEST[5/10] New GCP Secret has the same value as original Secret"
     set -x
-    kubectl get secret external-secret-example -o yaml | grep c2VjcmV0
+    kubectl get secret gcp-external-secret -o yaml | grep c2VjcmV0
     set +x
 
-    echo -e "\n>> TEST[6/8] Kubectl describe shows events"
+    echo -e "\n>> TEST[6/10] Kubectl describe shows events" # Does this belong in e2e tests?
     set -x
     kubectl describe pushsecret | grep pushsecret
     set +x
 
-    echo -e "\n>> TEST[7/8] Kubectl describe shows vault secret"
+    echo -e "\n>> TEST[7/10] Vault SecretStore Validating CAPABILITES:ReadWrite"
     set -x
-    kubectl describe pushsecret vault-pushsecret | grep Synced
+    kubectl get secretstore vault-secretstore | grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[8/8] Remote secret on vault has the same value as the original local one"
+    echo -e "\n>> TEST[8/10] Vault PushSecret Validating STATUS:Synced"
     set -x
-    kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep world
+    kubectl get pushsecret vault-pushsecret | grep Synced
     set +x
+
+     echo -e "\n>> TEST[9/10] Vault ExternalSecret Validating STATUS:SecretSynced"
+    set -x
+    kubectl get externalsecret vault-external-secret | grep SecretSynced
+    set +x
+
+    echo -e "\n>> TEST[10/10] New Vault Secret has the same value as original Secret"
+    set -x
+    kubectl get secret vault-external-secret -o yaml | grep world
+    set +x
+
+    # echo -e "\n>> TEST[10/10] Remote secret on vault has the same value as the original local one" Perform this es respurce ^^
+    # set -x
+    # kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep world
+    # set +x

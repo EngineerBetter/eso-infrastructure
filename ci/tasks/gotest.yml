@@ -7,7 +7,6 @@ image_resource:
    username: _json_key
    password: ((gcp_concourse_iam))
 
-
 inputs:
 - name: external-secrets-trunk
 
