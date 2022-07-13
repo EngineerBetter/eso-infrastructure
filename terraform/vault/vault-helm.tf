@@ -4,4 +4,7 @@ resource "helm_release" "vault-release" {
   chart      = var.vault-helm-chart
   namespace  = var.vault-namespace
   create_namespace = true
+  set {
+    dev.enabled = true
+  }
 }
