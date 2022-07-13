@@ -90,5 +90,5 @@ run:
 
     echo -e "\n>> TEST[10/10] New Vault Secret has the same value as original Secret"
     set -x
-    kubectl get secret vault-external-secret -o yaml | grep eyJ0YXJnZXQtZm9vYmFyIjoid29ybGQifQ==
+    kubectl get secret vault-external-secret -o yaml | grep c2VjcmV0
     set +x
