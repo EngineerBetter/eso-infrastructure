@@ -5,6 +5,7 @@ resource "helm_release" "vault-release" {
   namespace  = var.vault-namespace
   create_namespace = true
   set {
-    dev.enabled = true
+    name = "dev.enabled"
+    value = "true"
   }
 }
