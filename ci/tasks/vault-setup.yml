@@ -76,7 +76,7 @@ run:
       kubectl -n vault-ns exec vault-0 -- vault policy write eso-vault-policy /vault/file/eso-vault-policy.hcl
 
       echo "Create a vault Kubernetes authentication role,that connects the Kubernetes service account and vault policy..."
-      kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/role/eso bound_service_account_names=eso-vault-sa bound_service_account_namespaces=default policies=eso-vault-policy ttl=24h
+      kubectl -n vault-ns exec vault-0 -- vault write auth/kubernetes/role/eso-role bound_service_account_names=eso-vault-sa bound_service_account_namespaces=default policies=eso-vault-policy ttl=24h
       kubectl exec -n vault-ns vault-0 -- vault secrets enable -path=secret -version=2 kv
       echo "Clean the environment"
       rm cluster-keys.json
