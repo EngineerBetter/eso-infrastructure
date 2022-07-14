@@ -83,12 +83,7 @@ run:
     kubectl get pushsecret vault-pushsecret | grep Synced
     set +x
 
-     echo -e "\n>> TEST[9/10] Vault ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[8/8] Remote secret on vault has the same value as the original local one"
     set -x
-    kubectl get externalsecret vault-external-secret | grep SecretSynced
-    set +x
-
-    echo -e "\n>> TEST[10/10] New Vault Secret has the same value as original Secret"
-    set -x
-    kubectl get secret vault-external-secret -o yaml | grep c2VjcmV0
+    kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep c2VjcmV0
     set +x
