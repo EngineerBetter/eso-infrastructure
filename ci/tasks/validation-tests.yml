@@ -85,5 +85,5 @@ run:
 
     echo -e "\n>> TEST[8/8] Remote secret on vault has the same value as the original local one"
     set -x
-    kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep c2VjcmV0
+    kubectl exec -it vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep secret
     set +x
