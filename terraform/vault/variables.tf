@@ -21,6 +21,6 @@ variable "vault-helm-chart" {
   default = "vault"
 }
 variable "vault-namespace" {
-    type = string
-    default = "vault-ns"
+  type = string
+  default = "vault-ns"
 }
