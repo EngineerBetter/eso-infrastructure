@@ -32,7 +32,7 @@ run:
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secrets found"
     echo "kubectl context: $(kubectl config current-context)"
 
-    echo -e "\n>> TEST[1/9] applying manifest"
+    echo -e "\n>> TEST[1/10] applying manifest"
     echo "Cleaning up cluster resources (force new updates)"
     kubectl delete -f eso-infra-repo/ci/tests || echo "No manifests found"
     # Changing apply to respect an order
@@ -45,7 +45,7 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
 
-    echo -e "\n>> TEST[2/9] GCP SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[2/10] GCP SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore gcp-secretstore | grep ReadWrite
     set +x
@@ -53,37 +53,44 @@ run:
     echo -e "Sleeping for 5 to ensure resource creation."
     sleep 5
     
-    echo -e "\n>> TEST[3/9] GCP PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[3/10] GCP PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret gcp-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[4/9] GCP ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[4/10] GCP ExternalSecret Validating STATUS:SecretSynced"
     set -x
     kubectl get externalsecret gcp-external-secret | grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[5/9] New GCP Secret has the same value as original Secret"
+    echo -e "\n>> TEST[5/10] New GCP Secret has the same value as original Secret"
     set -x
-    kubectl get secret my-new-gcp-secret -o yaml | grep d29ybGQK
+    kubectl get secret my-new-gcp-secret -o yaml | grep d210ybGQK
     set +x
 
-    echo -e "\n>> TEST[6/9] Kubectl describe shows events" # Does this belong in e2e tests?
+    echo -e "\n>> TEST[6/10] Kubectl describe shows events" # Does this belong in e2e tests?
     set -x
     kubectl describe pushsecret | grep pushsecret
     set +x
 
-    echo -e "\n>> TEST[7/9] Vault SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[7/10] Vault SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore vault-secretstore | grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[8/9] Vault PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[8/10] Vault PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret vault-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[9/9] Remote secret on vault has the same value as the original local one"
+    echo -e "\n>> TEST[9/10] Remote secret on vault has the same value as the original local one"
     set -x
-    kubectl exec -it -n vault-ns vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep secret
+    kubectl exec -n vault-ns vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep secret
+    set +x
+
+    echo -e "\n>> TEST[10/10] ESO cannot overwrite a secret that is not managed by ESO"
+    set -x
+    kubectl exec -n vault-ns vault-0 -- vault kv put secret/target-foobar2 target-foobar2=secret2
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret-2.yaml
+    kubectl describe pushsecret vault-pushsecret-2 | grep "not managed by external-secrets"
     set +x
