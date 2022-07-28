@@ -91,6 +91,6 @@ run:
     echo -e "\n>> TEST[10/10] ESO cannot overwrite a secret that is not managed by ESO"
     set -x
     kubectl exec -n vault-ns vault-0 -- vault kv put secret/target-foobar2 target-foobar2=secret2
-    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret-2.yaml
-    kubectl describe pushsecret vault-pushsecret-2 | grep "not managed by external-secrets"
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret2.yaml
+    kubectl describe pushsecret vault-pushsecret2 | grep "not managed by external-secrets"
     set +x
