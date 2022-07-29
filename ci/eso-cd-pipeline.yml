@@ -110,8 +110,8 @@ groups:
   - deploy
   - validation-tests
   - deploy-vault
-  # - vault-setup
   - destroy-vault
+  - apply-crd-manifests
 
 - name: cluster-management
   jobs:
@@ -149,9 +149,6 @@ jobs:
   - get: evening-trigger
     trigger: true
     passed: [destroy-vault]
-  # - get: terraform-vault
-  #   passed: [destroy-vault]
-  #   trigger: true
   - put: terraform-gke
     params:
       terraform_source: eso-infra-repo/terraform/gke
@@ -169,15 +166,6 @@ jobs:
   - put: terraform-vault
     params:
       terraform_source: eso-infra-repo/terraform/vault
-
-# - name: vault-setup
-#   plan:
-#   - get: eso-infra-repo
-#   - get: terraform-vault
-#     passed: [deploy-vault]
-#     trigger: true
-#   - task: vault-setup
-#     file: eso-infra-repo/ci/tasks/vault-setup.yml
 
 - name: destroy-vault
   plan:
@@ -266,8 +254,15 @@ jobs:
   - get: external-secrets-trunk
     passed: [deploy]
     trigger: true
-  - task: create-gcp-secrets
-    file: eso-infra-repo/ci/tasks/create-gcp-secrets.yml
   - task: run-validation-tests
     file: eso-infra-repo/ci/tasks/validation-tests.yml
 
+- name: apply-crd-manifests
+  plan:
+  - get: eso-infra-repo
+    passed: [deploy-vault]
+  - get: terraform-vault
+    passed: [deploy-vault]
+    trigger: true
+  - task: apply-manifests
+    file: eso-infra-repo/ci/tasks/apply-manifests.yml
