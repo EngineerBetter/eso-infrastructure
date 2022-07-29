@@ -111,7 +111,7 @@ groups:
   - validation-tests
   - deploy-vault
   - destroy-vault
-  - apply-crd-manifests
+  - deploy-manifests
 
 - name: cluster-management
   jobs:
@@ -257,12 +257,12 @@ jobs:
   - task: run-validation-tests
     file: eso-infra-repo/ci/tasks/validation-tests.yml
 
-- name: apply-crd-manifests
+- name: deploy-manifests
   plan:
   - get: eso-infra-repo
     passed: [deploy-vault]
   - get: terraform-vault
     passed: [deploy-vault]
     trigger: true
-  - task: apply-manifests
-    file: eso-infra-repo/ci/tasks/apply-manifests.yml
+  - task: deploy-manifests
+    file: eso-infra-repo/ci/tasks/deploy-manifests.yml
