@@ -28,7 +28,7 @@ run:
 
     gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
-    rm ${GOOGLE_APPLICATION_CREDENTIALS}
+
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secret found"
     echo "kubectl context: $(kubectl config current-context)"
 
@@ -37,7 +37,10 @@ run:
 
     echo -e "\n>> Creating gcp authenticaton token for cluster"
     kubectl create secret generic gcpsm-secret --from-file=secret-access-credentials=${GOOGLE_APPLICATION_CREDENTIALS}
-    
+
+    echo -e "\n>> Removing credentials"
+    rm ${GOOGLE_APPLICATION_CREDENTIALS}
+
     echo -e "\n>> Applying ESO manifests"
     kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secret.yaml
     kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secretstore.yaml
