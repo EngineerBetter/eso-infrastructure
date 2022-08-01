@@ -1,0 +1,52 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: engineerbetter/pcf-ops
+    tag: latest
+
+params:
+  GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
+  GOOGLE_APPLICATION_CREDENTIALS: creds.json
+
+inputs:
+- name: eso-infra-repo
+
+run:
+  path: bash
+  args:
+  - -c
+  - |
+    set -euo pipefail
+    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+    echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
+      gcloud auth activate-service-account \
+        --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
+        --project 'kubernetes-cluster-eso'
+
+    gcloud container clusters get-credentials kubernetes-cluster-eso \
+           --zone=europe-west2-a --project=kubernetes-cluster-eso
+
+    gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secret found"
+    echo "kubectl context: $(kubectl config current-context)"
+
+    echo -e "\n>> Cleaning up cluster resources (force new updates)"
+    kubectl delete -f eso-infra-repo/ci/tests || echo "No manifests found"
+
+    echo -e "\n>> Creating gcp authenticaton token for cluster"
+    kubectl create secret generic gcpsm-secret --from-file=secret-access-credentials=${GOOGLE_APPLICATION_CREDENTIALS}
+
+    echo -e "\n>> Removing credentials"
+    rm ${GOOGLE_APPLICATION_CREDENTIALS}
+
+    echo -e "\n>> Applying ESO manifests"
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/gcp/gcp-external-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
