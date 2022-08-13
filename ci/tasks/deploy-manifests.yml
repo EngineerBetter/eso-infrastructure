@@ -9,8 +9,12 @@ image_resource:
 params:
   GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
   GOOGLE_APPLICATION_CREDENTIALS: creds.json
+
   AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+  AWS_ACCESS_KEY_ID_FILE: access-key-id-file
+
   AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
+  AWS_SECRET_ACCESS_KEY_FILE: secret-access-key-file
 
 inputs:
 - name: eso-infra-repo
