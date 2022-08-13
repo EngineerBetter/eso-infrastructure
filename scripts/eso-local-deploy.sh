@@ -42,7 +42,7 @@ function build-amd {
   (
     cd "$ESO_PATH"
     make build-amd64
-    TARGETOS=linux TARGETARCH=amd64 docker build -t $REPO:$TAG .
+    docker build --build-arg TARGETOS=linux --build-arg TARGETARCH=amd64 -t $REPO:$TAG .
   )
 
 }
