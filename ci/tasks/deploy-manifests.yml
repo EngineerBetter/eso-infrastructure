@@ -44,6 +44,9 @@ run:
     echo -e "\n>> Creating gcp authenticaton token for cluster"
     kubectl create secret generic gcpsm-secret --from-file=secret-access-credentials=${GOOGLE_APPLICATION_CREDENTIALS}
 
+    echo -e "\n>> Creating the AWS Credentials to be used by the cluster"
+    kubectl create secret generic awssm-secret --from-file=access-key=${AWS_ACCESS_KEY_ID_FILE} --from-file=secret-access-key=${AWS_SECRET_ACCESS_KEY_FILE}    
+
     echo -e "\n>> Removing credentials"
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
 
