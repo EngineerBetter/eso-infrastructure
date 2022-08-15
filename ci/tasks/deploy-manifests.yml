@@ -35,10 +35,8 @@ run:
 
     echo "${AWS_SECRET_ACCESS_KEY}" > ${AWS_SECRET_ACCESS_KEY_FILE} # Load the secret-access-key-file with the AWS secret access key of the IAM user
     
-
-    gcloud auth activate-service-account \  # Authorize access to GCP with the service account
-      --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
-      --project 'kubernetes-cluster-eso'
+    # Authorize access to GCP with the service account
+    gcloud auth activate-service-account --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" --project 'kubernetes-cluster-eso'
 
     gcloud container clusters get-credentials kubernetes-cluster-eso \ # Get the GKE cluster access details and configure kubectl for cli access
            --zone=europe-west2-a --project=kubernetes-cluster-eso
