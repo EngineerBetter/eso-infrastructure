@@ -32,11 +32,11 @@ run:
         --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
         --project 'kubernetes-cluster-eso'
 
-    echo "${AWS_ACCESS_KEY_ID}" > ${AWS_ACCESS_KEY_ID_FILE}
-    echo "${AWS_SECRET_ACCESS_KEY}" > ${AWS_SECRET_ACCESS_KEY_FILE}
+    echo -n "${AWS_ACCESS_KEY_ID}" > ${AWS_ACCESS_KEY_ID_FILE}
+    echo -n "${AWS_SECRET_ACCESS_KEY}" > ${AWS_SECRET_ACCESS_KEY_FILE}
 
     gcloud container clusters get-credentials kubernetes-cluster-eso \
-           --zone=europe-west2-a --project=kubernetes-cluster-eso
+          --zone=europe-west2-a --project=kubernetes-cluster-eso
 
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secret found"
     echo "kubectl context: $(kubectl config current-context)"
