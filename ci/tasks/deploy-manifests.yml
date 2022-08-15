@@ -7,16 +7,14 @@ image_resource:
     tag: latest
 
 params:
-# GCP Credentials #
   GOOGLE_CREDENTIALS: ((gcp_concourse_iam))
-  GOOGLE_APPLICATION_CREDENTIALS: creds.json # File containing the GCP credentials to be removed after creating the gcpsm-secret K8s secret
+  GOOGLE_APPLICATION_CREDENTIALS: creds.json
 
-# AWS Credentials #
   AWS_ACCESS_KEY_ID: ((aws-access-key-id))
-  AWS_ACCESS_KEY_ID_FILE: access-key-id-file # File containing the AWS Access Key ID, to be removed after creating the awssm-secret K8s secret
+  AWS_ACCESS_KEY_ID_FILE: access-key-id-file
 
   AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
-  AWS_SECRET_ACCESS_KEY_FILE: secret-access-key-file # File containing the AWS Secret Access Key, to be removed after creating the awssm-secret K8s secret
+  AWS_SECRET_ACCESS_KEY_FILE: secret-access-key-file
 
 inputs:
 - name: eso-infra-repo
@@ -28,20 +26,16 @@ run:
   - |
     set -euo pipefail
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-    # Load the creds.json file with the GCP service account credentials
+
     echo "${GOOGLE_CREDENTIALS}" > ${GOOGLE_APPLICATION_CREDENTIALS}
       gcloud auth activate-service-account \
-￼        --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
-￼        --project 'kubernetes-cluster-eso'    
+        --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" \
+        --project 'kubernetes-cluster-eso'
 
-    echo "${AWS_ACCESS_KEY_ID}" > ${AWS_ACCESS_KEY_ID_FILE} # Load the access-key-id-file with the AWS access key ID of the IAM user
+    echo "${AWS_ACCESS_KEY_ID}" > ${AWS_ACCESS_KEY_ID_FILE}
+    echo "${AWS_SECRET_ACCESS_KEY}" > ${AWS_SECRET_ACCESS_KEY_FILE}
 
-    echo "${AWS_SECRET_ACCESS_KEY}" > ${AWS_SECRET_ACCESS_KEY_FILE} # Load the secret-access-key-file with the AWS secret access key of the IAM user
-    
-    # Authorize access to GCP with the service account
-    # gcloud auth activate-service-account --key-file "${GOOGLE_APPLICATION_CREDENTIALS}" --project 'kubernetes-cluster-eso'
-
-    gcloud container clusters get-credentials kubernetes-cluster-eso \ # Get the GKE cluster access details and configure kubectl for cli access
+    gcloud container clusters get-credentials kubernetes-cluster-eso \
            --zone=europe-west2-a --project=kubernetes-cluster-eso
 
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secret found"
@@ -56,7 +50,7 @@ run:
     echo -e "\n>> Creating the AWS Credentials to be used by the cluster"
     kubectl create secret generic awssm-secret --from-file=access-key=${AWS_ACCESS_KEY_ID_FILE} --from-file=secret-access-key=${AWS_SECRET_ACCESS_KEY_FILE}    
 
-    echo -e "\n>> Removing credentials"  # Remove all files that contain both the GCP and the AWS credentials
+    echo -e "\n>> Removing credentials"
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
     rm ${AWS_ACCESS_KEY_ID_FILE}
     rm ${AWS_SECRET_ACCESS_KEY_FILE}
