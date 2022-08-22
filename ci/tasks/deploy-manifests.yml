@@ -48,7 +48,7 @@ run:
     kubectl create secret generic gcpsm-secret --from-file=secret-access-credentials=${GOOGLE_APPLICATION_CREDENTIALS}
 
     echo -e "\n>> Creating the AWS Credentials to be used by the cluster"
-    kubectl create secret generic awssm-secret --from-file=access-key=${AWS_ACCESS_KEY_ID_FILE} --from-file=secret-access-key=${AWS_SECRET_ACCESS_KEY_FILE}    
+    kubectl create secret generic awssm-secret --from-file=access-key=${AWS_ACCESS_KEY_ID_FILE} --from-file=secret-access-key=${AWS_SECRET_ACCESS_KEY_FILE}
 
     echo -e "\n>> Removing credentials"
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
@@ -64,3 +64,7 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secretstore.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-external-secret.yaml

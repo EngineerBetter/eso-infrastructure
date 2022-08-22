@@ -30,52 +30,67 @@ run:
            --zone=europe-west2-a --project=kubernetes-cluster-eso
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
 
-    echo -e "\n>> TEST[1/9] GCP SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[1/12] GCP SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore gcp-secretstore | grep ReadWrite
     set +x
 
     echo -e "Sleeping for 5 to ensure resource creation."
     sleep 5
-    
-    echo -e "\n>> TEST[2/9] GCP PushSecret Validating STATUS:Synced"
+
+    echo -e "\n>> TEST[2/12] GCP PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret gcp-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[3/9] GCP ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[3/12] GCP ExternalSecret Validating STATUS:SecretSynced"
     set -x
     kubectl get externalsecret gcp-external-secret | grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[4/9] New GCP Secret has the same value as original Secret"
+    echo -e "\n>> TEST[4/12] New GCP Secret has the same value as original Secret"
     set -x
-    kubectl get secret my-new-gcp-secret -o yaml | grep d29ybGQK
+    kubectl get secret my-new-gcp-secret -o yaml | grep d212ybGQK
     set +x
 
-    echo -e "\n>> TEST[5/9] Kubectl describe shows events" # Does this belong in e2e tests?
+    echo -e "\n>> TEST[5/12] Kubectl describe shows events" # Does this belong in e2e tests?
     set -x
     kubectl describe pushsecret | grep pushsecret
     set +x
 
-    echo -e "\n>> TEST[6/9] Vault SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[6/12] Vault SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore vault-secretstore | grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[7/9] Vault PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[7/12] Vault PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret vault-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[8/9] Remote secret on vault has the same value as the original local one"
+    echo -e "\n>> TEST[8/12] Remote secret on vault has the same value as the original local one"
     set -x
     kubectl exec -n vault-ns vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep secret
     set +x
 
-    echo -e "\n>> TEST[9/9] ESO cannot overwrite a secret that is not managed by ESO"
+    echo -e "\n>> TEST[9/12] ESO cannot overwrite a secret that is not managed by ESO in vault"
     set -x
     kubectl exec -n vault-ns vault-0 -- vault kv put secret/target-foobar2 target-foobar2=secret2
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret2.yaml
     kubectl describe pushsecret vault-pushsecret2 | grep "not managed by external-secrets"
+    set +x
+
+    echo -e "\n>> TEST[10/12] "AWS Secrets Manager SecretStore Validating CAPABILITES:ReadWrite"
+    set -x
+    kubectl get secretstore aws-secretstore | grep ReadWrite
+    set +x
+
+  # echo -e "\n>> TEST[11/12] AWS Secrets Manager PushSecret Validating STATUS:Synced"
+  # set -x
+  # kubectl get pushsecret aws-pushsecret | grep Synced
+  # set +x
+
+    echo -e "\n>> TEST[12/12] AWS Secrets Manager ExternalSecret Validating STATUS:SecretSynced"
+    set -x
+    kubectl get externalsecret aws-external-secret | grep SecretSynced
     set +x
