@@ -80,15 +80,15 @@ run:
     kubectl describe pushsecret vault-pushsecret2 | grep "not managed by external-secrets"
     set +x
 
-    echo -e "\n>> TEST[10/12] "AWS Secrets Manager SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[10/12] AWS Secrets Manager SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore aws-secretstore | grep ReadWrite
     set +x
 
-  # echo -e "\n>> TEST[11/12] AWS Secrets Manager PushSecret Validating STATUS:Synced"
-  # set -x
-  # kubectl get pushsecret aws-pushsecret | grep Synced
-  # set +x
+    # echo -e "\n>> TEST[11/12] AWS Secrets Manager PushSecret Validating STATUS:Synced"
+    # set -x
+    # kubectl get pushsecret aws-pushsecret | grep Synced
+    # set +x
 
     echo -e "\n>> TEST[12/12] AWS Secrets Manager ExternalSecret Validating STATUS:SecretSynced"
     set -x
