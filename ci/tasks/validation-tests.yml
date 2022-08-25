@@ -50,7 +50,7 @@ run:
 
     echo -e "\n>> TEST[4/12] New GCP Secret has the same value as original Secret"
     set -x
-    kubectl get secret my-new-gcp-secret -o yaml | grep d212ybGQK
+    kubectl get secret my-new-gcp-secret -o yaml | grep d29ybGQK
     set +x
 
     echo -e "\n>> TEST[5/12] Kubectl describe shows events" # Does this belong in e2e tests?
