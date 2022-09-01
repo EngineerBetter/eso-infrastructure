@@ -1,0 +1,32 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ParameterStore
+metadata:
+  name: aws-secretstore
+spec:
+  provider:
+    aws:
+      service: ParameterStore
+      # define a specific role to limit access
+      # to certain secrets.
+      # role is a optional field that
+      # can be omitted for test purposes
+      region: us-east-1 # eso account credentials have been generated in us-east-1
+      auth:
+        secretRef:
+          accessKeyIDSecretRef:
+            name: awssm-parameter
+            key: access-key
+          secretAccessKeySecretRef:
+            name: awssm-secret
+            key: secret-access-key
+      Resources:
+        BasicParameter:
+          Type: AWS::SSM::Parameter
+          Properties:
+            Name: command
+            Type: String
+            Value: date
+            Description: SSM Parameter for running date command.
+            AllowedPattern: "^[a-zA-Z]{1,10}$"
+            Tags:
+              Environment: DEV

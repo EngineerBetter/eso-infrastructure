@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1alpha1
+kind: PushParameter
+metadata:
+  name: aws-pushparameter
+  namespace: default # Same of the SecretStores
+spec:
+  refreshInterval: 10s
+  parameterStoreRefs:
+  - name: aws-pushparameter
+    kind: AWS::SSM::ParameterStore
+  selector:
+    secret:
+      name: aws-parameter
+  data:
+  - match:
+      secretKey: foobar6
+      remoteRefs:
+      - remoteKey: foo-bar6
