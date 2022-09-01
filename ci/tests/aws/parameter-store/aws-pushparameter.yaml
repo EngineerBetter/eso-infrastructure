@@ -1,18 +1,18 @@
 apiVersion: external-secrets.io/v1alpha1
-kind: PushParameter
+kind: PushSecret
 metadata:
   name: aws-pushparameter
   namespace: default # Same of the SecretStores
 spec:
   refreshInterval: 10s
-  parameterStoreRefs:
-  - name: aws-pushparameter
-    kind: AWS::SSM::ParameterStore
+  secretStoreRefs:
+  - name: aws-parameterstore
+    kind: SecretStore
   selector:
     secret:
-      name: aws-parameter
+      name: pokedex-credentials
   data:
   - match:
-      secretKey: foobar6
+      secretKey: best-pokemon
       remoteRefs:
-      - remoteKey: foo-bar6
+      - remoteKey: my-first-parameter
