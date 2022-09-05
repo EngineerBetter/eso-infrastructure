@@ -64,7 +64,10 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-secretstore.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret.yaml
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-external-secret.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-secret.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-secretstore.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-pushsecret.yaml
-    kubectl apply -f eso-infra-repo/ci/tests/aws/aws-external-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/secrets-manager/aws-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/secrets-manager/aws-secretstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/secrets-manager/aws-pushsecret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/secrets-manager/aws-external-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-parameterstore.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-pushparameter.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-ps-secret.yaml
