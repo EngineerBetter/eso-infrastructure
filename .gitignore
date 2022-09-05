@@ -7,6 +7,9 @@
 *.tfstate
 *.tfstate.*
 
+# Jetbrains IDE
+.idea/
+
 # Crash log files
 crash.log
 crash.*.log
