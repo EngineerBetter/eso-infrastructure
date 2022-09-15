@@ -1,4 +1,4 @@
-FROM golang:1.17-bullseye
+FROM golang:1.19-bullseye
 COPY external-secrets ./external-secrets
 
 RUN cd external-secrets \

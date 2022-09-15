@@ -3,9 +3,9 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-   repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-ops-image
-   username: _json_key
-   password: ((gcp_concourse_iam))
+    repository: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-ops-image
+    username: _json_key
+    password: ((gcp_concourse_iam))
 
 inputs:
 - name: external-secrets-trunk

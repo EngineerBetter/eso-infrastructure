@@ -27,7 +27,7 @@ run:
         --project 'kubernetes-cluster-eso'
 
     gcloud container clusters get-credentials kubernetes-cluster-eso \
-           --zone=europe-west2-a --project=kubernetes-cluster-eso
+            --zone=europe-west2-a --project=kubernetes-cluster-eso
     rm ${GOOGLE_APPLICATION_CREDENTIALS}
 
     echo -e "\n>> TEST[1/12] GCP SecretStore Validating CAPABILITES:ReadWrite"

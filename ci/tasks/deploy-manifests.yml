@@ -40,7 +40,7 @@ run:
 
     gcloud secrets delete foo-bar --project 'kubernetes-cluster-eso' --quiet || echo "No secret found"
     echo "kubectl context: $(kubectl config current-context)"
-
+    
     echo -e "\n>> Cleaning up cluster resources (force new updates)"
     kubectl delete -f eso-infra-repo/ci/tests || echo "No manifests found"
 
