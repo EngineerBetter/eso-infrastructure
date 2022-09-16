@@ -110,12 +110,12 @@ run:
 
     echo -e "\n>> TEST[14/16] AWS Parameter Store PushSecret Validating STATUS:Synced"
     set -x
-    kubectl get pushsecret aws-parameterstore | grep Synced
+    kubectl get pushsecret aws-pushparameter | grep Synced
     set +x
     
     echo -e "\n>> TEST[15/16] AWS Parameter Store Validating STATUS:SecretSynced"
     set -x
-    kubectl get externalsecret aws-parameter-store | grep SecretSynced
+    kubectl get externalsecret aws-external-parameter | grep SecretSynced
     set +x
     
     echo -e "\n>> TEST[16/16] New AWS Parameter has the same value as original Parameter"
