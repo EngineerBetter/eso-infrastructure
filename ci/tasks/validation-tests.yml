@@ -32,7 +32,7 @@ run:
 
     # GCP
 
-    echo -e "\n>> TEST[1/13] GCP SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[1/16] GCP SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore gcp-secretstore | grep ReadWrite
     set +x
@@ -40,44 +40,44 @@ run:
     echo -e "Sleeping for 5 to ensure resource creation."
     sleep 5
 
-    echo -e "\n>> TEST[2/13] GCP PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[2/16] GCP PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret gcp-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[3/13] GCP ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[3/16] GCP ExternalSecret Validating STATUS:SecretSynced"
     set -x
     kubectl get externalsecret gcp-external-secret | grep SecretSynced
     set +x
 
-    echo -e "\n>> TEST[4/13] New GCP Secret has the same value as original Secret"
+    echo -e "\n>> TEST[4/16] New GCP Secret has the same value as original Secret"
     set -x
     kubectl get secret my-new-gcp-secret -o yaml | grep d29ybGQK
     set +x
 
-    echo -e "\n>> TEST[5/13] Kubectl describe shows events" # Does this belong in e2e tests?
+    echo -e "\n>> TEST[5/16] Kubectl describe shows events" # Does this belong in e2e tests?
     set -x
     kubectl describe pushsecret | grep "PushSecret synced successfully"
     set +x
 
     # Vault 
 
-    echo -e "\n>> TEST[6/13] Vault SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[6/16] Vault SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore vault-secretstore | grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[7/13] Vault PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[7/16] Vault PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret vault-pushsecret | grep Synced
     set +x
 
-    echo -e "\n>> TEST[8/13] Remote secret on vault has the same value as the original local one"
+    echo -e "\n>> TEST[8/16] Remote secret on vault has the same value as the original local one"
     set -x
     kubectl exec -n vault-ns vault-0 -- vault kv get secret/target-foobar | tail -n1 | tr -s " " | cut -d " " -f2 | grep secret
     set +x
 
-    echo -e "\n>> TEST[9/13] ESO cannot overwrite a secret that is not managed by ESO in vault"
+    echo -e "\n>> TEST[9/16] ESO cannot overwrite a secret that is not managed by ESO in vault"
     set -x
     kubectl exec -n vault-ns vault-0 -- vault kv put secret/target-foobar2 target-foobar2=secret2
     kubectl apply -f eso-infra-repo/ci/tests/vault/vault-pushsecret2.yaml
@@ -86,39 +86,39 @@ run:
     
     # AWS Secret Store
 
-    echo -e "\n>> TEST[10/13] AWS Secrets Manager SecretStore Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[10/16] AWS Secrets Manager SecretStore Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore aws-secretstore | grep ReadWrite
     set +x
 
-    # echo -e "\n>> TEST[11/13] AWS Secrets Manager PushSecret Validating STATUS:Synced"
+    # echo -e "\n>> TEST[11/16] AWS Secrets Manager PushSecret Validating STATUS:Synced"
     # set -x
     # kubectl get pushsecret aws-pushsecret | grep Synced
     # set +x
 
-    echo -e "\n>> TEST[12/13] AWS Secrets Manager ExternalSecret Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[12/16] AWS Secrets Manager ExternalSecret Validating STATUS:SecretSynced"
     set -x
     kubectl get externalsecret aws-external-secret | grep SecretSynced
     set +x
     
     # AWS Parameter Store
     
-    echo -e "\n>> TEST[13/13] AWS Parameter Store Validating CAPABILITES:ReadWrite"
+    echo -e "\n>> TEST[13/16] AWS Parameter Store Validating CAPABILITES:ReadWrite"
     set -x
     kubectl get secretstore aws-parameterstore | grep ReadWrite
     set +x
 
-    echo -e "\n>> TEST[14/13] AWS Parameter Store PushSecret Validating STATUS:Synced"
+    echo -e "\n>> TEST[14/16] AWS Parameter Store PushSecret Validating STATUS:Synced"
     set -x
     kubectl get pushsecret aws-parameterstore | grep Synced
     set +x
     
-    echo -e "\n>> TEST[15/13] AWS Parameter Store Validating STATUS:SecretSynced"
+    echo -e "\n>> TEST[15/16] AWS Parameter Store Validating STATUS:SecretSynced"
     set -x
     kubectl get externalsecret aws-parameter-store | grep SecretSynced
     set +x
     
-    echo -e "\n>> TEST[16/13] New AWS Parameter has the same value as original Parameter"
+    echo -e "\n>> TEST[16/16] New AWS Parameter has the same value as original Parameter"
     set -x
     kubectl get secret secret-to-be-created -o yaml | grep Y2hhcm1hbmRlcg==
     set +x
