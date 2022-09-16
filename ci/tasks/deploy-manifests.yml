@@ -71,3 +71,4 @@ run:
     kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-parameterstore.yaml
     kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-pushparameter.yaml
     kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-ps-secret.yaml
+    kubectl apply -f eso-infra-repo/ci/tests/aws/parameter-store/aws-external-parameter.yaml
