@@ -36,7 +36,7 @@ else
     # Create vault policy that enables read and write capabilities for secrets at specific path
     cat << EOF > eso-vault-policy.hcl
     path "secret/*" { 
-      capabilities = ["create", "read", "update", "list"]
+        capabilities = ["create", "read", "update", "list"]
     }
 EOF
     kubectl cp eso-vault-policy.hcl vault-0:/vault/file/eso-vault-policy.hcl
