@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: aws-external-secret
+spec:
+  refreshInterval: 1m
+  secretStoreRef:
+    name: aws-parameterstore
+    kind: SecretStore
+  target:
+    name: secret-to-be-created
+    creationPolicy: Owner
+  data:
+  - secretKey: example-secret
+    remoteRef:
+      key: my-first-parameter # name of secret
