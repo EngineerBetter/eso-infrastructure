@@ -120,7 +120,7 @@ run:
     
     echo -e "\n>> TEST[16/16] New AWS Parameter has the same value as original Parameter"
     set -x
-    kubectl get secret secret-to-be-created -o yaml | grep Y2hhcm1hbmRlcg==
+    kubectl get secret parameter-to-be-created -o yaml | grep Y2hhcm1hbmRlcg==
     set +x
     
     

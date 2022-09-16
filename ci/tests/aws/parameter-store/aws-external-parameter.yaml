@@ -1,14 +1,14 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: aws-external-secret
+  name: aws-external-parameter
 spec:
   refreshInterval: 1m
   secretStoreRef:
     name: aws-parameterstore
     kind: SecretStore
   target:
-    name: secret-to-be-created
+    name: parameter-to-be-created
     creationPolicy: Owner
   data:
   - secretKey: example-secret
