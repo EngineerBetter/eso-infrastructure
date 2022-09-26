@@ -14,5 +14,5 @@ spec:
   data:
   - match:
       secretKey: best-pokemon
-      remoteRefs:
-      - remoteKey: my-first-parameter
+      remoteRef:
+        remoteKey: my-first-parameter
