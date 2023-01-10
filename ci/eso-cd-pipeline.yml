@@ -247,16 +247,6 @@ jobs:
         image_registry: europe-west2-docker.pkg.dev/kubernetes-cluster-eso/beach-team-eso/eso-binary-image
         version_file: ../../../eso-docker-tag/version
 
-- name: validation-tests
-  plan:
-  - get: eso-infra-repo
-    passed: [deploy]
-  - get: external-secrets-trunk
-    passed: [deploy]
-    trigger: true
-  - task: run-validation-tests
-    file: eso-infra-repo/ci/tasks/validation-tests.yml
-
 - name: deploy-manifests
   plan:
   - get: eso-infra-repo
@@ -266,3 +256,13 @@ jobs:
     trigger: true
   - task: deploy-manifests
     file: eso-infra-repo/ci/tasks/deploy-manifests.yml
+
+- name: validation-tests
+  plan:
+  - get: eso-infra-repo
+    passed: [deploy-manifests]
+  - get: external-secrets-trunk
+    passed: [deploy]
+    trigger: true
+  - task: run-validation-tests
+    file: eso-infra-repo/ci/tasks/validation-tests.yml
